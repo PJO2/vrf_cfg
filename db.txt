@@ -1,0 +1,63 @@
+topologies: 
+  - name: L3VPN dual
+    vrfs: 
+          - name: Video
+            templates:
+               - name: SpokeVrf
+                 services: [ 'Create', 'Update' ]
+               - name: B2B_primary
+                 services: [ 'Create', 'Update' ]
+          - name: Phone
+            templates:
+               - name: A2AVrf
+                 services: [ 'Create', 'Update' ]
+               - name: B2B_primary
+                 services: [ 'Create', 'Update' ]
+    roles:
+      - name: dual1
+        description: primary router for L3VPN sites
+        vars:
+            description: primary
+            role_id:     1 
+      - name: dual2
+        description: secondary router for L3VPN sites
+        vars:
+            description: secondary
+            role_id:     2 
+
+sites:
+   - name: Limoges001
+     location: 
+     id:   1001
+     contrat: Limoges
+     topology: L3VPN dual
+     vars:
+         vrfs:
+           - name: Video
+             lan:  
+               ip: 101.2.3.4 
+           - name: Phone
+             lan:  
+               ip: 101.4.5.6
+   - name: Nantes099
+     location: 
+     id:   1099
+     contrat: Nantes
+     topology: L3VPN dual
+     vars:
+         vrfs:
+           - name: Video
+             lan:  
+               ip: 102.2.3.4 
+           - name: Phone
+             lan:  
+               ip: 102.4.5.6
+
+contrats:
+   - name: Nantes
+     vars: 
+            id:   555
+   - name: Limoges
+     vars:
+            id:   666
+   
