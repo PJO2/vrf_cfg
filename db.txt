@@ -1,26 +1,44 @@
 topologies: 
   - name: L3VPN dual
-    vrfs: 
+    vars: 
+       vrfs:
           - name: Video
-            templates:
-               - name: SpokeVrf
-                 services: [ 'Create', 'Update' ]
-               - name: B2B_primary
-                 services: [ 'Create', 'Update' ]
+            b2b:  
+               ip: 10.0.0.0/30
+          - name: Internet
+            b2b:  
+               ip: 11.0.0.0/30
           - name: Phone
-            templates:
-               - name: A2AVrf
-                 services: [ 'Create', 'Update' ]
-               - name: B2B_primary
-                 services: [ 'Create', 'Update' ]
+            b2b:  
+               ip: 20.0.0.0/30
     roles:
       - name: dual1
         description: primary router for L3VPN sites
+        templates:
+            - name: SpokeVrf.j2
+              locator: cpe.site.vars.vrfs | json_query('[?name==`Phone`]')
+              services: [ 'Create', 'Update' ]
+            - name: B2B_primary.j2
+              services: [ 'Create', 'Update' ]
+              locator: cpe.topology.vars.vrfs
+            - name: A2AVrf.j2
+              services: [ 'Create', 'Update' ]
+              locator: cpe.site.vars.vrfs | json_query('[?name == `Video`  ||  name==`Internet`]') 
         vars:
             description: primary
             role_id:     1 
       - name: dual2
         description: secondary router for L3VPN sites
+        templates:
+            - name: SpokeVrf.j2
+              locator: cpe.site | json_query('[?name==`Limoges001`] | [0].vars.vrfs[?name==`Phone`]')
+              services: [ 'Create', 'Update' ]
+            - name: B2B_primary.j2
+              services: [ 'Create', 'Update' ]
+              locator: cpe.topology | json_query('[?name==`Limoges001`] | [0].vars.vrfs`]')
+            - name: A2AVrf.j2
+              services: [ 'Create', 'Update' ]
+              locator: cpe.site | json_query('[?name==`Nantes099`] | [0].vars.vrfs[?name == `Video`  ||  name==`Internet`]') 
         vars:
             description: secondary
             role_id:     2 
@@ -49,6 +67,9 @@ sites:
            - name: Video
              lan:  
                ip: 102.2.3.4 
+           - name: Internet
+             lan:  
+               ip: 2.8.76.54
            - name: Phone
              lan:  
                ip: 102.4.5.6
