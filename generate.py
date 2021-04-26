@@ -34,7 +34,7 @@ def jinja2_env(**kwargs):
 # --------------------------------------------------------------------------
 def locate_template_specific_data (template, cpe_info):
      json_vars = None
-     #  specific data are specified in the template database with the locator keyword
+     #  specific data are specified in the template database with the with_items keyword
      if 'with_items' in template:
          env = jinja2_env()
          template = env.from_string( '{{ ' + template['with_items'] + ' }}'  )
