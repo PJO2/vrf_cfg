@@ -35,9 +35,9 @@ def jinja2_env(**kwargs):
 def locate_template_specific_data (template, cpe_info):
      json_vars = None
      #  specific data are specified in the template database with the locator keyword
-     if 'locator' in template:
+     if 'with_items' in template:
          env = jinja2_env()
-         template = env.from_string( '{{ ' + template['locator'] + ' }}'  )
+         template = env.from_string( '{{ ' + template['with_items'] + ' }}'  )
          output = template.render(cpe=cpe_info)
          json_vars = json.loads ( output.replace("'", '"') )     
      return json_vars
@@ -77,7 +77,7 @@ def assign_service (service, cpe_info):
           if service in template['services']:
               json_supp_vars = locate_template_specific_data(template, cpe_info)
               print ("parsing tempate {}, locator is {}\njinja2 render vars is {}".
-                          format( template['name'], template['locator'], json_supp_vars) )
+                          format( template['name'], template['with_items'], json_supp_vars) )
               config[template['name']] = render_single_template (template['name'], 
                                                                  cpe_info, 
                                                                  json_supp_vars)

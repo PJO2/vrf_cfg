@@ -16,14 +16,14 @@ topologies:
         description: primary router for L3VPN sites
         templates:
             - name: SpokeVrf.j2
-              locator: cpe.site.vars.vrfs | json_query('[?name==`Phone`]')
+              with_items: cpe.site.vars.vrfs | json_query('[?name==`Phone`]')
               services: [ 'Create', 'Update' ]
             - name: B2B_primary.j2
               services: [ 'Create', 'Update' ]
-              locator: cpe.topology.vars.vrfs
+              with_items: cpe.topology.vars.vrfs
             - name: A2AVrf.j2
               services: [ 'Create', 'Update' ]
-              locator: cpe.site.vars.vrfs | json_query('[?name == `Video`  ||  name==`Internet`]') 
+              with_items: cpe.site.vars.vrfs | json_query('[?name == `Video`  ||  name==`Internet`]') 
         vars:
             description: primary
             role_id:     1 
@@ -31,14 +31,14 @@ topologies:
         description: secondary router for L3VPN sites
         templates:
             - name: SpokeVrf.j2
-              locator: cpe.site | json_query('[?name==`Limoges001`] | [0].vars.vrfs[?name==`Phone`]')
+              with_items: cpe.site | json_query('[?name==`Limoges001`] | [0].vars.vrfs[?name==`Phone`]')
               services: [ 'Create', 'Update' ]
             - name: B2B_primary.j2
               services: [ 'Create', 'Update' ]
-              locator: cpe.topology | json_query('[?name==`Limoges001`] | [0].vars.vrfs`]')
+              with_items: cpe.topology | json_query('[?name==`Limoges001`] | [0].vars.vrfs`]')
             - name: A2AVrf.j2
               services: [ 'Create', 'Update' ]
-              locator: cpe.site | json_query('[?name==`Nantes099`] | [0].vars.vrfs[?name == `Video`  ||  name==`Internet`]') 
+              with_items: cpe.site | json_query('[?name==`Nantes099`] | [0].vars.vrfs[?name == `Video`  ||  name==`Internet`]') 
         vars:
             description: secondary
             role_id:     2 
