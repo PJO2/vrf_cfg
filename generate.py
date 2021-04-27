@@ -22,6 +22,7 @@ def json_query(data, expr):
       return jmespath.search(expr, data)
 
 def jinja2_env(**kwargs):
+      """ Create a environment for jinja2 """
       env = jinja2.Environment(**kwargs)
       env.filters ['ipaddr'] = netaddr_filters.ipaddr      # add netaddr filters (ansible way)
       env.filters ['json_query'] = json_query              # add json_query filter (ansible way)
@@ -34,31 +35,34 @@ def jinja2_env(**kwargs):
 #     return an iterable list
 # --------------------------------------------------------------------------
 def locate_template_specific_data (template, cpe_info):
-     json_vars = None
+     with_items = None
      #  specific data are specified in the template database with the with_items keyword
      if 'with_items' in template:
          env = jinja2_env()
          template = env.from_string( '{{ ' + template['with_items'] + ' }}'  )
          output = template.render(cpe=cpe_info)
-         json_vars = json.loads ( output.replace("'", '"') )     
-     return json_vars
+         with_items = json.loads ( output.replace("'", '"') )     
+     return with_items
 
 
 # --------------------------------------------------------------------------
 # execute a template chunk
-# may iterate depending on supp_vars
+# may iterate depending on with_items
 # --------------------------------------------------------------------------
-def render_single_template (tmpl_name, cpe_info, supp_vars):
+def render_single_template (tmpl_name, cpe_info, with_items=None):
      """ resolve a single template """
      file_loader = jinja2.FileSystemLoader('templates')   # placeholder for jinja2 templates
      env = jinja2_env(loader=file_loader)
      template = env.get_template( tmpl_name )             # open jinja2 template
-     if isinstance(supp_vars, list):
-        output = ""
-        for vars in supp_vars:
-            output += template.render(cpe=cpe_info, vars=vars)
+     # if with_items is a list iterate on it, give base 1 index
+     if isinstance(with_items, list):
+        # call constructor first 
+        output = template.render(cpe=cpe_info, item=None, index=0)
+        # then iterate
+        for idx, item in enumerate(with_items, start=1):
+            output += template.render(cpe=cpe_info, item=item, index=idx)
      else:
-            output = template.render(cpe=cpe_info, vars=supp_vars) 
+            output = template.render(cpe=cpe_info, item=with_items, index=0) 
      return output
 
 
@@ -76,12 +80,10 @@ def assign_service (service, cpe_info):
      for template in cpe_info['role']['templates']:
           # check the template match the service to be applied
           if service in template['services']:
-              json_supp_vars = locate_template_specific_data(template, cpe_info)
-              print ("parsing tempate {}, locator is {}\njinja2 render vars is {}".
-                          format( template['name'], template['with_items'], json_supp_vars) )
-              config[template['name']] = render_single_template (template['name'], 
-                                                                 cpe_info, 
-                                                                 json_supp_vars)
+              with_items = locate_template_specific_data(template, cpe_info)
+              print ("parsing tempate {}, with_items is {}\tjinja2 rendered with_items is {}".format( 
+                                     template['name'], template['with_items'] if 'with_items' in template else '-', with_items) )
+              config[template['name']] = render_single_template (template['name'], cpe_info, with_items)
      return config
 
 

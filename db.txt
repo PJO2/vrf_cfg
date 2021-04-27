@@ -31,14 +31,11 @@ topologies:
         description: secondary router for L3VPN sites
         templates:
             - name: SpokeVrf.j2
-              with_items: cpe.site | json_query('[?name==`Limoges001`] | [0].vars.vrfs[?name==`Phone`]')
               services: [ 'Create', 'Update' ]
             - name: B2B_primary.j2
               services: [ 'Create', 'Update' ]
-              with_items: cpe.topology | json_query('[?name==`Limoges001`] | [0].vars.vrfs`]')
             - name: A2AVrf.j2
               services: [ 'Create', 'Update' ]
-              with_items: cpe.site | json_query('[?name==`Nantes099`] | [0].vars.vrfs[?name == `Video`  ||  name==`Internet`]') 
         vars:
             description: secondary
             role_id:     2 
