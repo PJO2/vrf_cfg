@@ -29,8 +29,9 @@ def jinja2_env(**kwargs):
 
 
 # --------------------------------------------------------------------------
-# locate specific data inside the cpe centered structure
-# return a iterable list
+# with_items translation:
+#     locate specific data inside the cpe centered structure
+#     return an iterable list
 # --------------------------------------------------------------------------
 def locate_template_specific_data (template, cpe_info):
      json_vars = None
