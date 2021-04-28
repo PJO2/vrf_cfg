@@ -1,0 +1,31 @@
+! --------------------------------------------- 
+! CE to RS peering
+! ---------------------------------------------
+
+{% set AS_BGP, VRF_NAME = '420000' ~ device.site.id, 'CONTRAT_' ~ device.contrat.name %}
+{% set LOOPBACK = '172.20.' ~ (device.site.id|int - 1000) ~ '.' ~ ( '2' if device.role.name=='secondary' else '1' ) %}
+
+interface Loopback 100 
+  description -- BGP to RS peering --
+  ip address {{ LOOPBACK }} 255.255.255.255
+
+router bgp {{ AS_BGP }}
+
+  address-family ipv4
+  ! advertise the Loopback to the underlay
+  network {{ LOOPBACK }} mask 255.255.255.255
+ exit-address-family
+
+{% for rs in device.tenant.vars.route_servers %}
+   neighbor {{ rs.ip }} remote-as {{ rs.as }}
+   neighbor {{ rs.ip }} description -- To route-server {{ rs.name }} --
+   neighbor {{ rs.ip }} ebgp-multihop 255
+   neighbor {{ rs.ip }} update-source Loopback100
+ address-family vpnv4
+  neighbor {{ rs.ip }} activate
+  neighbor {{ rs.ip }} send-community both
+  neighbor {{ rs.ip }} inter-as-hybrid
+ exit-address-family
+{% endfor %}
+
+exit

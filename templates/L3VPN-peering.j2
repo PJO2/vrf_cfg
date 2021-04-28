@@ -1,0 +1,20 @@
+! --------------------------------------------- 
+! CE to PE peering
+! item points on site.vars.wan[?name==role]
+! ---------------------------------------------
+
+{% set AS_BGP, VRF_NAME = '420000' ~ device.site.id, 'CONTRAT_' ~ device.contrat.name %}
+! called with item: {{ item }}
+
+router bgp {{ AS_BGP }}
+  neighbor {{ item.ip }} remote-as 25186
+  neighbor {{ item.ip }} description -- {{ item.name}} peer to PE--
+  neighbor {{ item.ip }} timers 15 45
+  
+  address-family ipv4
+  neighbor {{ item.ip }} activate
+  neighbor {{ item.ip }} route-map SETCT77 out
+  exit-address-family
+
+exit
+

@@ -1,41 +1,52 @@
+
+tenant:
+   templates:
+   - name: orange.j2
+     services: ['Create', 'Update' ]
+   vars:
+      route_servers:
+        - name: RS1
+          ip:   172.20.0.254
+          as:   4200999000
+        - name: RS2
+          ip:   172.20.1.254
+          as:   4200999000
+      vrfs:
+        - name: Video
+          id:  50
+          type: Hub and Spoke
+        - name: Phone
+          id:  51
+          type: Any to Any
+
 topologies: 
   - name: L3VPN dual
+    templates:
+       - name: RS_peering.j2
+         services: ['Create', 'Update' ]
+       - name: L3VPN-peering.j2
+         constructor: L3VPN-peering.ctor.j2
+         with_items: device.site.vars.wans | json_query('[? name==`' + device.role.vars.description + '`]')
+         services: ['Create', 'Update' ]
+       - name:        perVRF-routing.j2
+         constructor: perVRF-routing.ctor.j2
+         with_items: device.tenant.vars.vrfs
+         services: ['Create', 'Update' ]
     vars: 
-       vrfs:
-          - name: Video
-            b2b:  
-               ip: 10.0.0.0/30
-          - name: Internet
-            b2b:  
-               ip: 11.0.0.0/30
-          - name: Phone
-            b2b:  
-               ip: 20.0.0.0/30
     roles:
       - name: dual1
         description: primary router for L3VPN sites
         templates:
-            - name: SpokeVrf.j2
-              with_items: cpe.site.vars.vrfs | json_query('[?name==`Phone`]')
-              services: [ 'Create', 'Update' ]
-            - name: B2B_primary.j2
-              services: [ 'Create', 'Update' ]
-              with_items: cpe.topology.vars.vrfs
-            - name: A2AVrf.j2
-              services: [ 'Create', 'Update' ]
-              with_items: cpe.site.vars.vrfs | json_query('[?name == `Video`  ||  name==`Internet`]') 
+            - name: B2B-dual1.j2
+              services: ['Create', 'Update' ]
         vars:
             description: primary
             role_id:     1 
       - name: dual2
         description: secondary router for L3VPN sites
         templates:
-            - name: SpokeVrf.j2
-              services: [ 'Create', 'Update' ]
-            - name: B2B_primary.j2
-              services: [ 'Create', 'Update' ]
-            - name: A2AVrf.j2
-              services: [ 'Create', 'Update' ]
+            - name: B2B-dual1.j2
+              services: ['Create', 'Update' ]
         vars:
             description: secondary
             role_id:     2 
@@ -54,6 +65,11 @@ sites:
            - name: Phone
              lan:  
                ip: 101.4.5.6
+         wans:
+           - name: primary
+             ip:   11.11.0.1
+           - name: secondary
+             ip:   22.22.0.1
    - name: Nantes099
      location: 
      id:   1099

@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 # ------------------------------------------------
-# retrieve the cpe centered information from the database
+# retrieve the device centered information from the database
 #   get the site info and attach the following branches
 #        - topology
 #        - contrat
@@ -26,30 +26,39 @@ def find_attribut (attr_name, attr_value, dico):
       return branches[0]
 
 
-def get_cpe_data(site_name, role_name):
+def get_dev_data(site_name, role_name):
    """ retrieve the cpe centered database for a given site and a given role """
 
-   cpe_data = {}
+   dev_data = {}
    a_yaml_file = open("db.txt")    # read the databse (actually a single YAML file)
    db = yaml.load(a_yaml_file, Loader=yaml.FullLoader)
 
-   # extract info from the db
+   # extract info from the db and create the dev centered object
    try:
-       cpe_data['site']     = find_attribut ('sites',       site_name, db)
-       cpe_data['topology'] = find_attribut ('topologies',  cpe_data['site']['topology'],  db)
-       cpe_data['contrat']  = find_attribut ('contrats',    cpe_data['site']['contrat'],   db)
+       dev_data['tenant']   = db['tenant']
+       dev_data['site']     = find_attribut ('sites',       site_name, db)
+       dev_data['topology'] = find_attribut ('topologies',  dev_data['site']['topology'],  db)
+       dev_data['contrat']  = find_attribut ('contrats',    dev_data['site']['contrat'],   db)
        # get the role inside the found topology
-       cpe_data['role']     = find_attribut ('roles',       role_name, cpe_data['topology'])
-   except:
-       pass
+       dev_data['role']     = find_attribut ('roles',       role_name, dev_data['topology'])
 
-   return cpe_data
+       # templates: merge tenant, topology and role templates
+       dev_data['templates']  = []
+       for hierarchy in [ 'tenant', 'topology', 'role' ]:
+           if 'templates' in dev_data[hierarchy]:
+              print ("add templates : ", dev_data[hierarchy]['templates'] )
+              dev_data['templates'].extend ( dev_data[hierarchy]['templates'] )
+   except:
+       print("Error: ", sys.exc_info()[0])
+       raise
+
+   return dev_data
 
 if __name__=="__main__":
    if len(sys.argv)!=3: 
-      print ("Usage: get_cpe_data Site Role")
+      print ("Usage: get_dev_data Site Role")
    else:
-      info = get_cpe_data (sys.argv[1], sys.argv[2])
+      info = get_dev_data (sys.argv[1], sys.argv[2])
       for sub in info:
          print (sub, "is \n", info[sub], "\n------------------\n")
 
