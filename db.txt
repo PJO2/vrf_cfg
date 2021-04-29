@@ -25,16 +25,17 @@ topologies:
        - name: RS_peering.j2
          services: ['Create', 'Update' ]
        - name: L3VPN-peering.j2
-         constructor: L3VPN-peering.ctor.j2
+         prolog: L3VPN-peering.ctor.j2
          with_items: device.site.vars.wans | json_query('[? name==`' + device.role.vars.description + '`]')
          services: ['Create', 'Update' ]
        - name:        perVRF-routing.j2
-         constructor: perVRF-routing.ctor.j2
+         prolog: perVRF-routing.ctor.j2
          with_items: device.tenant.vars.vrfs
          services: ['Create', 'Update' ]
     vars: 
     roles:
       - name: dual1
+        occurrence: 1
         description: primary router for L3VPN sites
         templates:
             - name: B2B-dual1.j2
@@ -43,6 +44,7 @@ topologies:
             description: primary
             role_id:     1 
       - name: dual2
+        occurrence: 1
         description: secondary router for L3VPN sites
         templates:
             - name: B2B-dual1.j2

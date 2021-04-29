@@ -4,7 +4,6 @@
 
 import jinja2
 import json
-import sys
 
 # jinja2 enlightment
 import jmespath
@@ -54,7 +53,7 @@ def render_single_template (tmpl_name, ctor_name, dev_info, with_items=None):
      file_loader = jinja2.FileSystemLoader('templates')   # placeholder for jinja2 templates
      env = jinja2_env(loader=file_loader)
 
-     # resolve constructor if present:
+     # resolve prolog if present:
      if ctor_name:
           ctor = env.get_template( ctor_name )            # open jinja2 constructor
           output = ctor.render(device=dev_info)            # no user param 
@@ -86,12 +85,12 @@ def assign_service (service, dev_info):
           # check the template match the service to be applied
           if service in template['services']:
               with_items = locate_template_specific_data(template, dev_info)
-              print ("parsing tempate {} constructor {}, with_items is {}\tjinja2 rendered with_items is {}".format( 
+              print ("parsing tempate {} prolog {}, with_items is {}\tjinja2 rendered with_items is {}".format( 
                                      template['name'], 
-                                     template.get('constructor'), 
+                                     template.get('prolog'), 
                                      template['with_items'] if 'with_items' in template else '-', with_items) )
               config[template['name']] = render_single_template (template['name'], 
-                                                                 template.get('constructor'), 
+                                                                 template.get('prolog'), 
                                                                  dev_info, 
                                                                  with_items)
      return config
@@ -99,21 +98,30 @@ def assign_service (service, dev_info):
 
 
 if __name__=="__main__":
-   if len(sys.argv) != 4:
-      print ("Usage: generate_config Service Site Role")
-      quit()
+
+
+   import argparse
+   import sys
 
    # retrieve arguments
-   service, site_name, role_name = sys.argv[1:4]
+   parser = argparse.ArgumentParser(epilog = "Example osf use: generate.py -s Limoges001 -r dual1 -v 2 Create")
+   parser.add_argument("-s", "--site",      help="The site where the service is to be applied", required=True)
+   parser.add_argument("-r", "--role",      help="The topology's role to identify the site device", required=True)
+   parser.add_argument("-v", "--verbosity", help="Verbosity level, for troubleshooting", type=int, default=0)
+   parser.add_argument("-i", "--instance",  help="The instance number for roles having multiple devices", default=1)
+   parser.add_argument("service",  help="The service to apply to a site or device : [Create, Read, Update, Delete]",
+                                   choices=['Create', 'Read', 'Update', 'Delete'])
+   args = parser.parse_args()
    # retrieve dev centered database
-   info = device_data.get_dev_data (site_name, role_name)
+   info = device_data.get_dev_data (args.site, args.role)
 
-   print ("---------------------------------")
-   print(json.dumps( info, sort_keys=False, indent=4, separators=(',', ': ')))
-   print ("---------------------------------")
+   if args.verbosity > 1:
+       print ("---------------------------------")
+       print(json.dumps( info, sort_keys=False, indent=4, separators=(',', ': ')))
+       print ("---------------------------------")
    
 
-   cfg = assign_service (service, info)
+   cfg = assign_service (args.service, info)
    for tmpl_name in cfg:
       print("\n\n! ----------------------\n! template {} has returned\n! --------------------------\n{}" . format( tmpl_name, cfg[tmpl_name] ))
  
