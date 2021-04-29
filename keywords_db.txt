@@ -1,0 +1,49 @@
+# -------------------------------
+# model (design phase)
+# -------------------------------
+
+# tenant: actions and data global for a tenant
+tenant:
+   &templates:
+   vars:
+
+# topologies: group of sites sharing a common design
+topologies:
+   - name:
+     &templates:
+     vars:
+
+     # roles: a function that an equipment has inside the topology
+     roles:
+     - name:
+       occurrence:
+       description:
+       &templates:
+       vars:
+
+templates:
+   - name:
+     services:  [ Create, Read, Update, Delete ]
+     prolog:
+     with_items: {{ jinja2 expression }}
+
+# -------------------------------
+# instantiation (deployment phase)
+# -------------------------------
+sites:
+   - name:
+     topology:
+       - name:  ->topologies
+     vars:
+
+# -------------------------------
+# inventory (configuration phase)
+# -------------------------------
+devices:
+   - inventory_hostname:
+     inventory_ssh_address:
+     site:  --> sites
+     role:  --> roles
+     device_id: [occurrence ?]
+     vars:
+
