@@ -1,23 +1,24 @@
 
-tenant:
-   templates:
-   - name: orange.j2
-     services: ['Create', 'Update' ]
-   vars:
-      route_servers:
-        - name: RS1
-          ip:   172.20.0.254
-          as:   4200999000
-        - name: RS2
-          ip:   172.20.1.254
-          as:   4200999000
-      vrfs:
-        - name: Video
-          id:  50
-          type: Hub and Spoke
-        - name: Phone
-          id:  51
-          type: Any to Any
+tenants:
+   - name: SAUR
+     templates:
+      - name: orange.j2
+        services: ['Create', 'Update' ]
+     vars:
+        route_servers:
+          - name: RS1
+            ip:   172.20.0.254
+            as:   4200999000
+          - name: RS2
+            ip:   172.20.1.254
+            as:   4200999000
+        vrfs:
+          - name: Video
+            id:  50
+            type: Hub and Spoke
+          - name: Phone
+            id:  51
+            type: Any to Any
 
 topologies: 
   - name: L3VPN dual
@@ -55,6 +56,7 @@ topologies:
 
 sites:
    - name: Limoges001
+     tenant: SAUR
      location: 
      id:   1001
      contrat: Limoges
@@ -73,6 +75,7 @@ sites:
            - name: secondary
              ip:   22.22.0.1
    - name: Nantes099
+     tenant: SAUR
      location: 
      id:   1099
      contrat: Nantes

@@ -13,7 +13,8 @@ topologies:
      &templates:
      vars:
 
-     # roles: a function that an equipment has inside the topology
+     # roles: a group of administratively independant entities
+     #        performaing a common function inside a topology
      roles:
      - name:
        occurrence:

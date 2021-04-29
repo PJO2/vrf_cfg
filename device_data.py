@@ -35,8 +35,8 @@ def get_dev_data(site_name, role_name):
 
    # extract info from the db and create the dev centered object
    try:
-       dev_data['tenant']   = db['tenant']
        dev_data['site']     = find_attribut ('sites',       site_name, db)
+       dev_data['tenant']   = find_attribut ('tenants',     dev_data['site']['tenant'],    db)
        dev_data['topology'] = find_attribut ('topologies',  dev_data['site']['topology'],  db)
        dev_data['contrat']  = find_attribut ('contrats',    dev_data['site']['contrat'],   db)
        # get the role inside the found topology
