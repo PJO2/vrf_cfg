@@ -1,7 +1,17 @@
 # -------------------------------
-# model (design phase)
+# configuration model
 # -------------------------------
+templates:
+   - name:
+     services:  [ Create, Read, Update, Delete ]
+     file:
+     prolog:
+     with_items: {{ jinja2 expression }}
+     vars:
 
+# -------------------------------
+# data model (design phase)
+# -------------------------------
 # tenant: actions and data global for a tenant
 tenant:
    templates:
@@ -25,14 +35,6 @@ topologies:
           - name: -> templates
        vars:
 
-templates:
-   - name:
-     services:  [ Create, Read, Update, Delete ]
-     file:
-     prolog:
-     with_items: {{ jinja2 expression }}
-     vars:
-
 # -------------------------------
 # instantiation (deployment phase)
 # -------------------------------
@@ -43,7 +45,7 @@ sites:
      vars:
 
 # -------------------------------
-# inventory (configuration phase)
+# inventory
 # -------------------------------
 devices:
    - inventory_hostname:
