@@ -1,9 +1,39 @@
 
+templates:
+   - name: Route Server Peering
+     file: RS_peering.j2
+     services: ['Create', 'Update' ]
+
+   - name: PE CE peering
+     file:   L3VPN-peering.j2
+     services: ['Create', 'Update' ]
+     prolog: L3VPN-peering.ctor.j2
+     with_items: device.site.vars.wans | json_query('[? name==`' + device.role.vars.description + '`]')
+
+   - name: mono VRF routing
+     file:   perVRF-routing.j2
+     prolog: perVRF-routing.ctor.j2
+     with_items: device.tenant.vars.vrfs
+     services: ['Create', 'Update' ]
+
+   - name: Back to back BGP configuration Primary
+     file: B2B-dual1.j2
+     services: ['Create', 'Update' ]
+   - name: Back to back BGP configuration Secondary
+     file: B2B-dual2.j2
+     services: ['Create', 'Update' ]
+
+   - name: Banner configuration
+     file:  orange.j2
+     services: ['Create', 'Update' ]
+     vars: 
+           author: PJO2
+
+
 tenants:
    - name: SAUR
      templates:
-      - name: orange.j2
-        services: ['Create', 'Update' ]
+      - name: Banner configuration
      vars:
         route_servers:
           - name: RS1
@@ -23,24 +53,16 @@ tenants:
 topologies: 
   - name: L3VPN dual
     templates:
-       - name: RS_peering.j2
-         services: ['Create', 'Update' ]
-       - name: L3VPN-peering.j2
-         prolog: L3VPN-peering.ctor.j2
-         with_items: device.site.vars.wans | json_query('[? name==`' + device.role.vars.description + '`]')
-         services: ['Create', 'Update' ]
-       - name:        perVRF-routing.j2
-         prolog: perVRF-routing.ctor.j2
-         with_items: device.tenant.vars.vrfs
-         services: ['Create', 'Update' ]
+       - name: Route Server Peering
+       - name: PE CE peering
+       - name: mono VRF routing
     vars: 
     roles:
       - name: dual1
         occurrence: 1
         description: primary router for L3VPN sites
         templates:
-            - name: B2B-dual1.j2
-              services: ['Create', 'Update' ]
+          - name: Back to back BGP configuration Primary
         vars:
             description: primary
             role_id:     1 
@@ -48,8 +70,7 @@ topologies:
         occurrence: 1
         description: secondary router for L3VPN sites
         templates:
-            - name: B2B-dual1.j2
-              services: ['Create', 'Update' ]
+            - name: Back to back BGP configuration Secondary
         vars:
             description: secondary
             role_id:     2 

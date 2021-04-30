@@ -84,12 +84,14 @@ def assign_service (service, dev_info):
      for template in dev_info['templates']:
           # check the template match the service to be applied
           if service in template['services']:
+              # provide the template entry to the device centered varaible
+              dev_info['template'] = template
               with_items = locate_template_specific_data(template, dev_info)
               print ("parsing tempate {} prolog {}, with_items is {}\tjinja2 rendered with_items is {}".format( 
-                                     template['name'], 
+                                     template['file'], 
                                      template.get('prolog'), 
                                      template['with_items'] if 'with_items' in template else '-', with_items) )
-              config[template['name']] = render_single_template (template['name'], 
+              config[template['name']] = render_single_template (template['file'], 
                                                                  template.get('prolog'), 
                                                                  dev_info, 
                                                                  with_items)

@@ -46,8 +46,11 @@ def get_dev_data(site_name, role_name):
        dev_data['templates']  = []
        for hierarchy in [ 'tenant', 'topology', 'role' ]:
            if 'templates' in dev_data[hierarchy]:
-              print ("add templates : ", dev_data[hierarchy]['templates'] )
-              dev_data['templates'].extend ( dev_data[hierarchy]['templates'] )
+              # retrieve template data in templates hierarchy
+              for tmpl in dev_data[hierarchy]['templates']:
+                 tmpl_data = find_attribut ('templates', tmpl['name'], db)
+                 print ("add templates : ", tmpl_data )
+                 dev_data['templates'].append ( tmpl_data )
    except:
        print("Error: ", sys.exc_info()[0])
        raise
@@ -56,7 +59,8 @@ def get_dev_data(site_name, role_name):
 
 if __name__=="__main__":
    if len(sys.argv)!=3: 
-      print ("Usage: get_dev_data Site Role")
+      print ( "Usage: {} Site Role".format(sys.argv[0]) )
+      print ( "\nExample: {} Limoges001 dual2\n".format(sys.argv[0]) )
    else:
       info = get_dev_data (sys.argv[1], sys.argv[2])
       for sub in info:

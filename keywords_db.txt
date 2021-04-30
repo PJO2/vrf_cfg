@@ -4,13 +4,15 @@
 
 # tenant: actions and data global for a tenant
 tenant:
-   &templates:
+   templates:
+     - name: -> templates
    vars:
 
 # topologies: group of sites sharing a common design
 topologies:
    - name:
-     &templates:
+     templates:
+       - name: -> templates
      vars:
 
      # roles: a group of administratively independant entities
@@ -19,14 +21,17 @@ topologies:
      - name:
        occurrence:
        description:
-       &templates:
+       templates:
+          - name: -> templates
        vars:
 
 templates:
    - name:
      services:  [ Create, Read, Update, Delete ]
+     file:
      prolog:
      with_items: {{ jinja2 expression }}
+     vars:
 
 # -------------------------------
 # instantiation (deployment phase)
@@ -45,6 +50,6 @@ devices:
      inventory_ssh_address:
      site:  --> sites
      role:  --> roles
-     device_id: [occurrence ?]
+     occurrence: 
      vars:
 
