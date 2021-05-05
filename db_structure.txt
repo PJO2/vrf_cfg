@@ -5,6 +5,7 @@ templates:
    - name:
      services:  [ Create, Read, Update, Delete ]
      file:
+     with_extra: {{ jinja2 expression }}
      prolog:
      with_items: {{ jinja2 expression }}
      vars:
@@ -12,7 +13,7 @@ templates:
 # -------------------------------
 # data model (design phase)
 # -------------------------------
-# tenant: actions and data global for a tenant
+# tenant: per tenant actions and data
 tenant:
    templates:
      - name: -> templates
@@ -50,6 +51,7 @@ sites:
 devices:
    - inventory_hostname:
      inventory_ssh_address:
+     location:
      site:  --> sites
      role:  --> roles
      occurrence: 

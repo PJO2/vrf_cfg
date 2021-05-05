@@ -8,12 +8,13 @@ templates:
      file:   L3VPN-peering.j2
      services: ['Create', 'Update' ]
      prolog: L3VPN-peering.ctor.j2
-     with_items: device.site.vars.wans | json_query('[? name==`' + device.role.vars.description + '`]')
+     with_extra: device.site.vars.wans | json_query('[? name==`' + device.role.vars.description + '`]')
 
    - name: mono VRF routing
      file:   perVRF-routing.j2
      prolog: perVRF-routing.ctor.j2
-     with_items: device.tenant.vars.vrfs
+     with_items: device.site.vars.vrfs
+     with_extra: device.tenant.vars.vrfs |  json_query('[? name==`' + item.name + '`]')
      services: ['Create', 'Update' ]
 
    - name: Back to back BGP configuration Primary
@@ -35,6 +36,7 @@ tenants:
      templates:
       - name: Banner configuration
      vars:
+        as_bgp: 65000
         route_servers:
           - name: RS1
             ip:   172.20.0.254
@@ -44,10 +46,13 @@ tenants:
             as:   4200999000
         vrfs:
           - name: Video
-            id:  50
+            id:   41
             type: Hub and Spoke
           - name: Phone
-            id:  51
+            id:   46
+            type: Any to Any
+          - name: Data
+            id:   31
             type: Any to Any
 
 topologies: 

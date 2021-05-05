@@ -1,0 +1,58 @@
+! --------------------------------------------- 
+! Per VRF configuration
+! iteration clause : device.topology.vars.vrfs
+!    vrfs !
+!         ! --- name
+!         ! --- id
+!         ! --- type
+! ---------------------------------------------
+
+
+# vrf definition :
+vrf definition {{ item.name }}
+   rd {{ device.tenant.vars.as_bgp }}:{{ item.id }}
+   ! depending on VRF Type Hub And Spoke or Any to Any
+   route-target both 1{{ "%04d" | format (device.site.id) }}:{{ item.id   if item.type=='Hub And Spoke' else device.contrat.vars.id }}
+   address-family ipv4
+     
+   exit-address-family
+exit
+ 
+  
+# vasi definitions:
+interface vasileft {{ index }}
+  description -- dataplane and controlplane leaking from VRF to GRT --
+  vrf forwarding {{ VRF_NAME }}
+  ip address 10.0.{{ index }}.1 255.255.255.254
+  
+interface vasiright {{ index }}
+  description -- dataplane and controlplane leaking from GRT to VRF {{ VRF_NAME }} --
+  ip address 10.0.{{ index }}.0 255.255.255.254
+
+# BGP control plane
+router bgp {{ device.tenant.vars.as_bgp }}
+ bgp log-neighbor-changes
+ no bgp default ipv4-unicast
+ ! Vasi 
+ neighbor 10.0.{{index}}.1 remote-as {{ AS_BGP }}
+ neighbor 10.0.{{index}}.1 description --Vasi{{index}}--
+!
+ address-family ipv4
+  neighbor 10.0.{{ index }}.1 activate
+  ! GRT has received all route, advertise none  to VRFs 
+  neighbor 10.0.{{ index}}.1 prefix-list DENY_ALL out
+ exit-address-family
+ !
+ address-family ipv4 vrf {{ item.name }}
+  ! Necessary to change its own router-id
+  bgp router-id 10.0.{{index}}.1
+  
+  {% for lan in item.lans %}
+  network {{ lan.ip }} mask {{ lan.mask }}
+  {% endfor %}
+  
+  neighbor 10.0.{{ index }}.0 remote-as {{ AS_BGP }}
+  neighbor 10.0.{{ index }}.0 activate
+ exit-address-family
+
+

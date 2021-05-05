@@ -33,7 +33,7 @@ def jinja2_env(**kwargs):
 #     locate specific data inside the device centered structure
 #     return an iterable list
 # --------------------------------------------------------------------------
-def locate_template_specific_data (template, dev_info):
+def locate_template_iteration_data (template, dev_info):
      with_items = None
      #  specific data are specified in the template database with the with_items keyword
      if 'with_items' in template:
@@ -43,12 +43,26 @@ def locate_template_specific_data (template, dev_info):
          with_items = json.loads ( output.replace("'", '"') )     
      return with_items
 
+# --------------------------------------------------------------------------
+# with_extra translation:
+#     locate specific data inside the device centered structure
+# --------------------------------------------------------------------------
+def locate_template_specific_data (extra_expr, dev_info, item):
+     extra = None
+     #  specific data are specified in the template database with the with_items keyword
+     if extra_expr:
+         env = jinja2_env()
+         template = env.from_string( '{{ ' + extra_expr + ' | first  }}'  )
+         output = template.render(device=dev_info, item=item)
+         extra = json.loads ( output.replace("'", '"') )     
+     return extra
+
 
 # --------------------------------------------------------------------------
 # execute a template chunk
 # may iterate depending on with_items  (may be later with_nested will be implemented)
 # --------------------------------------------------------------------------
-def render_single_template (tmpl_name, ctor_name, dev_info, with_items=None):
+def render_single_template (tmpl_name, ctor_name, extra_expr, dev_info, with_items=None):
      """ resolve a single template """
      file_loader = jinja2.FileSystemLoader('templates')   # placeholder for jinja2 templates
      env = jinja2_env(loader=file_loader)
@@ -64,9 +78,11 @@ def render_single_template (tmpl_name, ctor_name, dev_info, with_items=None):
      template = env.get_template( tmpl_name )             # open jinja2 template
      if isinstance(with_items, list):
         for idx, item in enumerate(with_items, start=1):
-            output += template.render(device=dev_info, item=item, index=idx)
+            extra = locate_template_specific_data(extra_expr, dev_info, item)
+            output += template.render(device=dev_info, item=item, index=idx, extra=extra)
      else:
-        output += template.render(device=dev_info, item=with_items, index=0) 
+        extra = locate_template_specific_data(extra_expr, dev_info, None)
+        output += template.render(device=dev_info, item=None, index=0, extra=extra) 
      return output
 
 
@@ -86,13 +102,16 @@ def assign_service (service, dev_info):
           if service in template['services']:
               # provide the template entry to the device centered varaible
               dev_info['template'] = template
-              with_items = locate_template_specific_data(template, dev_info)
-              print ("parsing tempate {} prolog {}, with_items is {}\tjinja2 rendered with_items is {}".format( 
+              with_items = locate_template_iteration_data(template, dev_info)
+              print ("parsing tempate {} prolog {}, extra {}, with_items is {}\tjinja2 rendered with_items is {}".format( 
                                      template['file'], 
                                      template.get('prolog'), 
-                                     template['with_items'] if 'with_items' in template else '-', with_items) )
+                                     template['with_extra'] if 'with_extra' in template else 'None',
+                                     template['with_items'] if 'with_items' in template else 'None', 
+                                     with_items) )
               config[template['name']] = render_single_template (template['file'], 
                                                                  template.get('prolog'), 
+                                                                 template.get('with_extra'), 
                                                                  dev_info, 
                                                                  with_items)
      return config
@@ -106,7 +125,7 @@ if __name__=="__main__":
    import sys
 
    # retrieve arguments
-   parser = argparse.ArgumentParser(epilog = "Example osf use: generate.py -s Limoges001 -r dual1 -v 2 Create")
+   parser = argparse.ArgumentParser(epilog = "Example of use: ./generate.py -s Limoges001 -r dual1 -v 2 Create")
    parser.add_argument("-s", "--site",      help="The site where the service is to be applied", required=True)
    parser.add_argument("-r", "--role",      help="The topology's role to identify the site device", required=True)
    parser.add_argument("-v", "--verbosity", help="Verbosity level, for troubleshooting", type=int, default=0)

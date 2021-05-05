@@ -2,14 +2,13 @@
 ! CE to RS peering
 ! ---------------------------------------------
 
-{% set AS_BGP, VRF_NAME = '420000' ~ device.site.id, 'CONTRAT_' ~ device.contrat.name %}
 {% set LOOPBACK = '172.20.' ~ (device.site.id|int - 1000) ~ '.' ~ ( '2' if device.role.name=='secondary' else '1' ) %}
 
 interface Loopback 100 
   description -- BGP to RS peering --
   ip address {{ LOOPBACK }} 255.255.255.255
 
-router bgp {{ AS_BGP }}
+router bgp {{ device.tenant.vars.as_bgp }}
 
   address-family ipv4
   ! advertise the Loopback to the underlay
