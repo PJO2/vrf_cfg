@@ -1,21 +1,23 @@
 
 templates:
    - name: Route Server Peering
-     file: RS_peering.j2
-     services: ['Create', 'Update' ]
+     file:       RS_peering.j2
+     services:   ['Create', 'Update' ]
 
    - name: PE CE peering
-     file:   L3VPN-peering.j2
-     services: ['Create', 'Update' ]
-     prolog: L3VPN-peering.ctor.j2
+     file:       L3VPN-peering.j2
+     precedence: 50
+     services:   ['Create', 'Update' ]
+     prolog:     L3VPN-peering.ctor.j2
      with_extra: device.site.vars.wans | json_query('[? name==`' + device.role.vars.description + '`]')
 
    - name: mono VRF routing
-     file:   perVRF-routing.j2
-     prolog: perVRF-routing.ctor.j2
-     with_items: device.site.vars.vrfs
-     with_extra: device.tenant.vars.vrfs |  json_query('[? name==`' + item.name + '`]')
-     services: ['Create', 'Update' ]
+     file:        perVRF-routing.j2
+     precedence:  150
+     prolog:      perVRF-routing.ctor.j2
+     with_items:  device.site.vars.vrfs
+     with_extra:  device.tenant.vars.vrfs |  json_query('[? name==`' + item.name + '`]')
+     services:    ['Create', 'Update' ]
 
    - name: Back to back BGP configuration Primary
      file: B2B-dual1.j2
@@ -25,8 +27,9 @@ templates:
      services: ['Create', 'Update' ]
 
    - name: Banner configuration
-     file:  orange.j2
-     services: ['Create', 'Update' ]
+     file:       orange.j2
+     precedence: 200
+     services:   ['Create', 'Update' ]
      vars: 
            author: PJO2
 

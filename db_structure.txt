@@ -3,6 +3,7 @@
 # -------------------------------
 templates:
    - name:
+     precedence:
      services:  [ Create, Read, Update, Delete ]
      file:
      with_extra: {{ jinja2 expression }}

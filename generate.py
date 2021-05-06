@@ -89,32 +89,40 @@ def render_single_template (tmpl_name, ctor_name, extra_expr, dev_info, with_ite
 # ---------------------------------------------------------------------------
 # Assign a Create, Update, Delete service to a CPE
 # ---------------------------------------------------------------------------
+def assign_service_debug(template, with_items):
+    print ("parsing tempate {} prolog {}, extra {}, with_items is {}\tjinja2 rendered with_items is {}".format( 
+                    template['file'], 
+                    template.get('prolog'), 
+                    template['with_extra'] if 'with_extra' in template else 'None',
+                    template['with_items'] if 'with_items' in template else 'None', 
+                    with_items) )
+
+
+
 def assign_service (service, dev_info):
      """ generate CPE configuration for a given Service (except read service)
 
      input:  the dev centered database, the name of the service
      ouptut: the sums of all templates reltives to the service"""
 
-     config = {}
+     config_tmpl = {}
+     config_lines = ""
+     templates = sorted( dev_info['templates'], key=lambda tmpl: tmpl.get('precedence', 100) )
      # parse the template list for the current role
-     for template in dev_info['templates']:
+     for template in templates:
           # check the template match the service to be applied
           if service in template['services']:
-              # provide the template entry to the device centered varaible
+              # provide the template entry to the device centered variable
               dev_info['template'] = template
               with_items = locate_template_iteration_data(template, dev_info)
-              print ("parsing tempate {} prolog {}, extra {}, with_items is {}\tjinja2 rendered with_items is {}".format( 
-                                     template['file'], 
-                                     template.get('prolog'), 
-                                     template['with_extra'] if 'with_extra' in template else 'None',
-                                     template['with_items'] if 'with_items' in template else 'None', 
-                                     with_items) )
-              config[template['name']] = render_single_template (template['file'], 
+              assign_service_debug(template, with_items)    # some debugs
+              config_tmpl[template['name']] = render_single_template (template['file'], 
                                                                  template.get('prolog'), 
                                                                  template.get('with_extra'), 
                                                                  dev_info, 
                                                                  with_items)
-     return config
+              config_lines += config_tmpl[template['name']] + "\n"
+     return (config_lines, config_tmpl)
 
 
 
@@ -130,6 +138,7 @@ if __name__=="__main__":
    parser.add_argument("-r", "--role",      help="The topology's role to identify the site device", required=True)
    parser.add_argument("-v", "--verbosity", help="Verbosity level, for troubleshooting", type=int, default=0)
    parser.add_argument("-i", "--instance",  help="The instance number for roles having multiple devices", default=1)
+   parser.add_argument("-o", "--output",    help="The file to be written with the device configuration")
    parser.add_argument("service",  help="The service to apply to a site or device : [Create, Read, Update, Delete]",
                                    choices=['Create', 'Read', 'Update', 'Delete'])
    args = parser.parse_args()
@@ -142,8 +151,12 @@ if __name__=="__main__":
        print ("---------------------------------")
    
 
-   cfg = assign_service (args.service, info)
-   for tmpl_name in cfg:
-      print("\n\n! ----------------------\n! template {} has returned\n! --------------------------\n{}" . format( tmpl_name, cfg[tmpl_name] ))
- 
+   cfg_lines, cfg_templ = assign_service (args.service, info)
+   for tmpl_name in cfg_templ:
+      print("\n\n! ----------------------\n! template {} has returned\n! --------------------------\n{}" . format( tmpl_name, cfg_templ[tmpl_name] ))
+
+   # write templates sorted by precedence
+   if args.output: 
+      with open(args.output, "w") as file_object:
+           file_object.write( cfg_lines )
 
