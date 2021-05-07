@@ -4,7 +4,7 @@
 ! ---------------------------------------------
 
 
-{% set COMMUNITY = '55'  if device.role.name=='secondary' else '77' %}
+{% set COMMUNITY = '55'  if device.role.vars.description=='secondary' else '77' %}
 
 route-map SETCT{{ COMMUNITY }}
   set community 65000:{{ COMMUNITY }}

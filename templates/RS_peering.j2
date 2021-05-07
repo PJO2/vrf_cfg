@@ -2,7 +2,10 @@
 ! CE to RS peering
 ! ---------------------------------------------
 
-{% set LOOPBACK = '172.20.' ~ ( '2' if device.role.name=='secondary' else '1' )  ~ '.' ~ device.site.id %}
+! role is {{ device.role.name }}
+! role id is {{ '2' if device.role.vars.description=='secondary' else '1' }}
+
+{% set LOOPBACK = '172.20.' ~ ( '2' if device.role.vars.description=='secondary' else '1' )  ~ '.' ~ device.site.id %}
 
 interface Loopback 100 
   description -- BGP to RS peering --
@@ -18,6 +21,7 @@ router bgp {{ device.tenant.vars.as_bgp }}
   neighbor  RS  update-source Loopback100
  address-family vpnv4
     neighbor  RS  allowas-in
+    neighbor  RS  soo 65000:{{ device.site.id }}
     neighbor  RS  send-community both
     neighbor  RS  inter-as-hybrid
   exit-address-family

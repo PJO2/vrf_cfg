@@ -12,7 +12,7 @@ router bgp {{ device.tenant.vars.as_bgp }}
   
   address-family ipv4
   neighbor {{ extra.ip }} activate
-  neighbor {{ extra.ip }} route-map SETCT{{  '55' if device.role.name=='secondary' else '77' }} out
+  neighbor {{ extra.ip }} route-map SETCT{{  '55' if device.role.vars.description=='secondary' else '77' }} out
   exit-address-family
 
 exit
