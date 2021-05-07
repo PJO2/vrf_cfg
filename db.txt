@@ -1,5 +1,10 @@
 
 templates:
+   - name: Cleanup
+     file: Kill
+     precedence: 0
+     services:   ['Create', 'Update' ]
+
    - name: Route Server Peering
      file:       RS_peering.j2
      services:   ['Create', 'Update' ]
@@ -38,15 +43,15 @@ tenants:
    - name: SAUR
      templates:
       - name: Banner configuration
+      - name: Cleanup
      vars:
         as_bgp: 65000
+        route_servers_as: 65500
         route_servers:
           - name: RS1
-            ip:   172.20.0.254
-            as:   4200999000
+            ip:   172.20.0.0
           - name: RS2
-            ip:   172.20.1.254
-            as:   4200999000
+            ip:   172.20.0.1
         vrfs:
           - name: Video
             id:   41
@@ -87,39 +92,47 @@ sites:
    - name: Limoges001
      tenant: SAUR
      location: 
-     id:   1001
+     id:   101
      contrat: Limoges
      topology: L3VPN dual
      vars:
          vrfs:
            - name: Video
              lan:  
-               ip: 101.2.3.4 
+               ip: 10.101.41.0/24
            - name: Phone
              lan:  
-               ip: 101.4.5.6
+               ip: 10.101.46.0/24
+           - name: Data
+             lan:  
+               ip: 10.101.31.0/24
          wans:
            - name: primary
-             ip:   11.11.0.1
+             ip:   10.24.31.1
            - name: secondary
-             ip:   22.22.0.1
+             ip:   10.24.31.5
    - name: Nantes099
      tenant: SAUR
      location: 
-     id:   1099
+     id:   109
      contrat: Nantes
      topology: L3VPN dual
      vars:
          vrfs:
            - name: Video
              lan:  
-               ip: 102.2.3.4 
-           - name: Internet
+               ip: 10.109.41.0/24
+           - name: Data
              lan:  
-               ip: 2.8.76.54
+               ip: 10.109.31.0/24
            - name: Phone
              lan:  
-               ip: 102.4.5.6
+               ip: 10.109.46.0/24
+         wans:
+           - name: primary
+             ip:   10.24.32.5
+           - name: secondary
+             ip:   10.24.32.1
 
 contrats:
    - name: Nantes

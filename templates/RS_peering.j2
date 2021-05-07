@@ -2,29 +2,37 @@
 ! CE to RS peering
 ! ---------------------------------------------
 
-{% set LOOPBACK = '172.20.' ~ (device.site.id|int - 1000) ~ '.' ~ ( '2' if device.role.name=='secondary' else '1' ) %}
+{% set LOOPBACK = '172.20.' ~ ( '2' if device.role.name=='secondary' else '1' )  ~ '.' ~ device.site.id %}
 
 interface Loopback 100 
   description -- BGP to RS peering --
   ip address {{ LOOPBACK }} 255.255.255.255
 
 router bgp {{ device.tenant.vars.as_bgp }}
+  no bgp default ipv4-unicast
+  neighbor  RS  peer-group
+  neighbor  RS  timers 15 45
+  neighbor  RS  remote-as {{ device.tenant.vars.route_servers_as }}
+  neighbor  RS  description -- To route-server --
+  neighbor  RS  ebgp-multihop 255
+  neighbor  RS  update-source Loopback100
+ address-family vpnv4
+    neighbor  RS  allowas-in
+    neighbor  RS  send-community both
+    neighbor  RS  inter-as-hybrid
+  exit-address-family
 
   address-family ipv4
-  ! advertise the Loopback to the underlay
-  network {{ LOOPBACK }} mask 255.255.255.255
- exit-address-family
+     ! advertise the Loopback to the underlay
+     network {{ LOOPBACK }} mask 255.255.255.255
+  exit-address-family
 
 {% for rs in device.tenant.vars.route_servers %}
-   neighbor {{ rs.ip }} remote-as {{ rs.as }}
-   neighbor {{ rs.ip }} description -- To route-server {{ rs.name }} --
-   neighbor {{ rs.ip }} ebgp-multihop 255
-   neighbor {{ rs.ip }} update-source Loopback100
+ neighbor {{ rs.ip }} peer-group RS
+ neighbor {{ rs.ip }} description -- To route-server {{ rs.name }} --
  address-family vpnv4
-  neighbor {{ rs.ip }} activate
-  neighbor {{ rs.ip }} send-community both
-  neighbor {{ rs.ip }} inter-as-hybrid
- exit-address-family
+   neighbor {{ rs.ip }} activate
+  exit-address-family
 {% endfor %}
 
 exit

@@ -1,6 +1,6 @@
 ! --------------------------------------------- 
 ! CE to PE peering
-! extra points on site.vars.wan[?name==role]
+! extra points on site.vars.wan[!q!name==role]
 ! ---------------------------------------------
 
 ! called with extra: {{ extra }}
@@ -12,7 +12,7 @@ router bgp {{ device.tenant.vars.as_bgp }}
   
   address-family ipv4
   neighbor {{ extra.ip }} activate
-  neighbor {{ extra.ip }} route-map SETCT77 out
+  neighbor {{ extra.ip }} route-map SETCT{{  '55' if device.role.name=='secondary' else '77' }} out
   exit-address-family
 
 exit

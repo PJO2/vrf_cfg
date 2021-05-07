@@ -1,0 +1,28 @@
+route-map SETCT77
+route-map SETCT55
+interface vasileft 1
+interface vasileft 2
+interface vasileft 3
+int gi 3.31
+int gi 3.41
+int gi 3.46
+
+no vrf definition Video
+no vrf definition Phone
+no vrf definition Data
+no router bgp 65000
+no route-map SETCT77
+no route-map SETCT55
+no interface Loopback 100
+no ip prefix-list DENY_ALL
+
+no interface vasileft 1
+no interface vasileft 2
+no interface vasileft 3
+no interface vasiright 1
+no interface vasiright 2
+no interface vasiright 3
+
+no int gi 3.31
+no int gi 3.41
+no int gi 3.46
