@@ -59,7 +59,7 @@ tenants:
           - name: Phone
             id:   46
             type: Any to Any
-          - name: Data
+          - name: Data1
             id:   31
             type: Any to Any
 
@@ -103,7 +103,7 @@ sites:
            - name: Phone
              lan:  
                ip: 10.101.46.0/24
-           - name: Data
+           - name: Data1
              lan:  
                ip: 10.101.31.0/24
          wans:
@@ -122,7 +122,7 @@ sites:
            - name: Video
              lan:  
                ip: 10.109.41.0/24
-           - name: Data
+           - name: Data1
              lan:  
                ip: 10.109.31.0/24
            - name: Phone

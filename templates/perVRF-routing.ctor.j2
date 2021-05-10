@@ -8,4 +8,12 @@ ip prefix-list DENY_ALL seq 5 deny 0.0.0.0/0 le 32
 router bgp {{ device.tenant.vars.as_bgp }}
   bgp log-neighbor-changes
   no bgp default ipv4-unicast
+  neighbor VASI peer-group
+  neighbor VASI remote-as 65000
+  neighbor VASI description -- internal peer on VASI --
+
+  address-family ipv4
+     neighbor VASI prefix-list DENY_ALL out
+     neighbor VASI send-community
+  exit-a
 exit

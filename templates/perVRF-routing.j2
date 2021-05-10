@@ -18,41 +18,40 @@
 vrf definition {{ item.name }}
    rd {{ device.tenant.vars.as_bgp }}:{{ "%03d9%03d" | format (device.site.id|int, extra.id|int) }}
    ! depending on VRF Type Hub And Spoke or Any to Any (for now any to any)
-   route-target both  {{ device.tenant.vars.as_bgp }}:{{ device.site.id }}00{{ extra.id }}  
+   route-target both  {{ extra.id }}:{{ device.site.id }}  
    address-family ipv4
-       inter-as-hybrid next-hop 10.0.{{ index }}.0
+       inter-as-hybrid next-hop 10.0.{{ extra.id }}.0
    exit-address-family
 exit
  
   
 # vasi definitions:
-interface vasileft {{ index }}
+interface vasileft {{ extra.id }}
   description -- dataplane and controlplane leaking from VRF to GRT --
   vrf forwarding {{ item.name }}
-  ip address 10.0.{{ index }}.1 255.255.255.254
+  ip address 10.0.{{ extra.id }}.1 255.255.255.254
   
-interface vasiright {{ index }}
+interface vasiright {{ extra.id }}
   description -- dataplane and controlplane leaking from GRT to VRF {{ item.name }} --
-  ip address 10.0.{{ index }}.0 255.255.255.254
+  ip address 10.0.{{ extra.id }}.0 255.255.255.254
 
 # BGP control plane
 router bgp {{ device.tenant.vars.as_bgp }}
  ! Vasi 
- neighbor 10.0.{{index}}.1 remote-as {{ device.tenant.vars.as_bgp }}
- neighbor 10.0.{{index}}.1 description --Vasi{{index}}--
+ neighbor 10.0.{{extra.id}}.1 peer-group VASI
 !
  address-family ipv4
-  neighbor 10.0.{{ index }}.1 activate
+  neighbor 10.0.{{ extra.id }}.1 activate
   ! GRT has received all route, advertise none  to VRFs 
-  neighbor 10.0.{{ index}}.1 prefix-list DENY_ALL out
+  neighbor 10.0.{{ extra.id}}.1 activate
  exit-address-family
  !
  address-family ipv4 vrf {{ item.name }}
   ! Necessary to change its own router-id
-  bgp router-id 10.0.{{index}}.1
+  bgp router-id 10.0.{{extra.id}}.1
   network {{ item.lan.ip  | ipaddr('network') }} mask {{ item.lan.ip | ipaddr('netmask') }}
-  neighbor 10.0.{{ index }}.0 remote-as {{ device.tenant.vars.as_bgp }}
-  neighbor 10.0.{{ index }}.0 activate
+  neighbor 10.0.{{ extra.id }}.0 remote-as {{ device.tenant.vars.as_bgp }}
+  neighbor 10.0.{{ extra.id }}.0 activate
  exit-address-family
 
 
