@@ -1,0 +1,11 @@
+Sur serveur linux ajouter des addresses ip en 172.20.x.y a la loopback
+Lancer la creation des peers 
+	CreateGobgpCfg.py <#peer low> <#peer high>
+Lancer plusieurs sessions gobgpd (limite de 1000 peers environ)
+
+Sur Routeur:
+Ajouter des interfaces secondaires a la loopback 100
+Enlever le update source au template peer-session CEs
+Lancer scale.py pour creer la configuration
+utiliser sshpass -p cisco scp scaling.config @ip:running-config
+
