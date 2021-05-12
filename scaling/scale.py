@@ -7,9 +7,16 @@ import random
 import string
 import jinja2
 
-CreateTemplate = """
-int loopback {{ site.id }}
-   ip address 172.19.{{ site.id // 100}}.{{ site.id % 100}} 255.255.255.255
+random.seed(100)    # fix strings generation
+
+CreateContract = """
+ip extcommunity-list standard Contract_{{ contract.id }} permit rt {{ contract.id }}
+"""
+
+CreateSite = """
+int loopback 100
+   ip address 172.19.{{ site.id // 100}}.{{ site.id % 100}} 255.255.255.255 secondary
+
 
 {% for vrf in vrfs  %}
 route-map From_{{ site.name }} permit {{ vrf.id }}
@@ -19,13 +26,11 @@ route-map From_{{ site.name }} permit {{ vrf.id }}
 {% endfor %}
 
 route-map To_{{ site.name }} permit {{ contract.id }}
-   description -- site is {{ site.name }} }}, .
-                  contract is {{ contract.name }} --
+   description -- site is {{ site.name }} }}, contract is {{ contract.name }} --
    match extcommunity {{ contract.id }}
 
 router bgp 65500
       neighbor 172.20.{{ site.id // 100}}.{{ site.id % 100}} inherit peer-session CEs
-      neighbor 172.20.{{ site.id // 100}}.{{ site.id % 100}} update-source loopback {{ site.id }}
 
    address-family vpnv4
       neighbor 172.20.{{ site.id // 100}}.{{ site.id % 100}} activate
@@ -35,19 +40,29 @@ router bgp 65500
 
 """
 
-vrfs = [  { "name": "Data1", "id": 31 }, { "name": "Video", "id": 46 }, { "name": "Phone", "id": 46 } ]
+vrfs = [  { "name": "Data1", "id": 31 }, { "name": "Video", "id": 41 }, { "name": "Phone", "id": 46 } ]
 contract = { "name": "contract", "id": 0 }
 letters = string.ascii_lowercase
 
+
+# Create 100 contract
+for ark in range (500, 601):
+   template = jinja2.Template(CreateContract)
+   contract['id'] = ark
+   output = template.render (contract=contract)
+   print (output)
+
 # create 2000 peers
-for ark in range (201, 2000):
+for ark in range (201, 4000):
    contract['id'] = random.randint(500, 600)
    site = {}
    site['name']   = ''.join(random.choice(letters) for i in range(10))
    site['id']     = ark
    # resolve template
-   template = jinja2.Template(CreateTemplate)
+   template = jinja2.Template(CreateSite)
    output = template.render (site=site, vrfs=vrfs, contract=contract)
    print (output)
+
+print ("\nend\n")
 
 
