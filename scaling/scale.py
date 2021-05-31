@@ -10,7 +10,7 @@ import jinja2
 random.seed(100)    # fix strings generation
 
 CreateContract = """
-ip extcommunity-list standard Contract_{{ contract.id }} permit rt {{ contract.id }}
+ip extcommunity-list standard Contract_{{ contract.id }} permit rt 65500:{{ contract.id }}
 """
 
 CreateSite = """

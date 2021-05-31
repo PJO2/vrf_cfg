@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block head %}
+{% endblock %}
+
+    
+{% block body %}
+  <form class="container">
+       <div class="row">
+            <div class="col-md-6">
+                 <button type="button" class="btn btn-primary" style="width:125px" id="save" value="Save">
+                              <i class="glyphicon glyphicon-save"> </i> &nbsp; Save to
+                    </button>
+           </div>
+           <div class="col-md-6" style="margin-top:8px">
+                    <button type="button" class="btn btn-info" style="width:125px;" 
+                                 id="list" value="List" onClick="location.href='/list'">
+                              <i class="glyphicon glyphicon-search"> </i> &nbsp; List
+                    </button>
+           </div>
+        </div>
+     </form>
+{% endblock %}
+  

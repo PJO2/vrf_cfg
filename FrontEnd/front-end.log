@@ -1,0 +1,202 @@
+2021-05-21 16:15:34,108 - display - ERROR - Exception on /contracts [GET]
+Traceback (most recent call last):
+  File "/home/ark/.local/lib/python3.7/site-packages/flask/app.py", line 2051, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/ark/.local/lib/python3.7/site-packages/flask/app.py", line 1501, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/ark/.local/lib/python3.7/site-packages/flask/app.py", line 1499, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/ark/.local/lib/python3.7/site-packages/flask/app.py", line 1485, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**req.view_args)
+  File "display.py", line 26, in contracts
+    return restapis.build_contracts_list()
+  File "/home/ark/SAUR/FrontEnd/restapis.py", line 18, in build_contracts_list
+    url = 'https://' + config.HUBs[0] + contracts
+NameError: name 'contracts' is not defined
+2021-05-21 16:16:32,650 - display - ERROR - Exception on /contracts [GET]
+Traceback (most recent call last):
+  File "/home/ark/.local/lib/python3.7/site-packages/flask/app.py", line 2051, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/ark/.local/lib/python3.7/site-packages/flask/app.py", line 1501, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/ark/.local/lib/python3.7/site-packages/flask/app.py", line 1499, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/ark/.local/lib/python3.7/site-packages/flask/app.py", line 1485, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**req.view_args)
+  File "display.py", line 26, in contracts
+    return restapis.build_contracts_list()
+  File "/home/ark/SAUR/FrontEnd/restapis.py", line 18, in build_contracts_list
+    url = 'https://' + config.HUBs[0] + URLs['contracts']
+NameError: name 'contracts' is not defined
+2021-05-21 16:16:37,528 - display - ERROR - Exception on /contracts [GET]
+Traceback (most recent call last):
+  File "/home/ark/.local/lib/python3.7/site-packages/flask/app.py", line 2051, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/ark/.local/lib/python3.7/site-packages/flask/app.py", line 1501, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/ark/.local/lib/python3.7/site-packages/flask/app.py", line 1499, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/ark/.local/lib/python3.7/site-packages/flask/app.py", line 1485, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**req.view_args)
+  File "display.py", line 26, in contracts
+    return restapis.build_contracts_list()
+  File "/home/ark/SAUR/FrontEnd/restapis.py", line 18, in build_contracts_list
+    url = 'https://' + config.HUBs[0] + URLs['contracts']
+TypeError: list indices must be integers or slices, not str
+2021-05-21 16:17:40,058 - display - ERROR - Exception on /contracts [GET]
+Traceback (most recent call last):
+  File "/home/ark/.local/lib/python3.7/site-packages/flask/app.py", line 2051, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/ark/.local/lib/python3.7/site-packages/flask/app.py", line 1502, in full_dispatch_request
+    return self.finalize_request(rv)
+  File "/home/ark/.local/lib/python3.7/site-packages/flask/app.py", line 1521, in finalize_request
+    response = self.make_response(rv)
+  File "/home/ark/.local/lib/python3.7/site-packages/flask/app.py", line 1714, in make_response
+    "The view function did not return a valid"
+TypeError: The view function did not return a valid response. The return type must be a string, dict, tuple, Response instance, or WSGI callable, but it was a Response.
+2021-05-21 16:18:41,487 - display - ERROR - Exception on /contracts [GET]
+Traceback (most recent call last):
+  File "/home/ark/.local/lib/python3.7/site-packages/flask/app.py", line 2051, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/ark/.local/lib/python3.7/site-packages/flask/app.py", line 1502, in full_dispatch_request
+    return self.finalize_request(rv)
+  File "/home/ark/.local/lib/python3.7/site-packages/flask/app.py", line 1521, in finalize_request
+    response = self.make_response(rv)
+  File "/home/ark/.local/lib/python3.7/site-packages/flask/app.py", line 1714, in make_response
+    "The view function did not return a valid"
+TypeError: The view function did not return a valid response. The return type must be a string, dict, tuple, Response instance, or WSGI callable, but it was a Response.
+2021-05-21 16:19:34,059 - display - ERROR - Exception on /contracts [GET]
+Traceback (most recent call last):
+  File "/home/ark/.local/lib/python3.7/site-packages/flask/app.py", line 2051, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/ark/.local/lib/python3.7/site-packages/flask/app.py", line 1502, in full_dispatch_request
+    return self.finalize_request(rv)
+  File "/home/ark/.local/lib/python3.7/site-packages/flask/app.py", line 1521, in finalize_request
+    response = self.make_response(rv)
+  File "/home/ark/.local/lib/python3.7/site-packages/flask/app.py", line 1714, in make_response
+    "The view function did not return a valid"
+TypeError: The view function did not return a valid response. The return type must be a string, dict, tuple, Response instance, or WSGI callable, but it was a Response.
+2021-05-21 16:25:32,465 - display - ERROR - Exception on /contracts [GET]
+Traceback (most recent call last):
+  File "/home/ark/.local/lib/python3.7/site-packages/flask/app.py", line 2051, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/ark/.local/lib/python3.7/site-packages/flask/app.py", line 1502, in full_dispatch_request
+    return self.finalize_request(rv)
+  File "/home/ark/.local/lib/python3.7/site-packages/flask/app.py", line 1521, in finalize_request
+    response = self.make_response(rv)
+  File "/home/ark/.local/lib/python3.7/site-packages/flask/app.py", line 1714, in make_response
+    "The view function did not return a valid"
+TypeError: The view function did not return a valid response. The return type must be a string, dict, tuple, Response instance, or WSGI callable, but it was a Response.
+2021-05-21 16:30:50,873 - display - ERROR - Exception on /contracts [GET]
+Traceback (most recent call last):
+  File "/home/ark/.local/lib/python3.7/site-packages/flask/app.py", line 2051, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/ark/.local/lib/python3.7/site-packages/flask/app.py", line 1501, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/ark/.local/lib/python3.7/site-packages/flask/app.py", line 1499, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/ark/.local/lib/python3.7/site-packages/flask/app.py", line 1485, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**req.view_args)
+  File "display.py", line 26, in contracts
+    return restapis.build_contracts_list()
+  File "/home/ark/SAUR/FrontEnd/restapis.py", line 26, in build_contracts_list
+    print(answer["Cisco-IOS-XE-bgp:standard"])
+TypeError: 'Response' object is not subscriptable
+2021-05-21 16:35:17,098 - display - ERROR - Exception on /contracts [GET]
+Traceback (most recent call last):
+  File "/home/ark/.local/lib/python3.7/site-packages/flask/app.py", line 2051, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/ark/.local/lib/python3.7/site-packages/flask/app.py", line 1501, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/ark/.local/lib/python3.7/site-packages/flask/app.py", line 1499, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/ark/.local/lib/python3.7/site-packages/flask/app.py", line 1485, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**req.view_args)
+  File "display.py", line 26, in contracts
+    return restapis.build_contracts_list()
+  File "/home/ark/SAUR/FrontEnd/restapis.py", line 26, in build_contracts_list
+    contracts = [ ctc.name    for ctc in answer["Cisco-IOS-XE-bgp:standard"]  ]
+  File "/home/ark/SAUR/FrontEnd/restapis.py", line 26, in <listcomp>
+    contracts = [ ctc.name    for ctc in answer["Cisco-IOS-XE-bgp:standard"]  ]
+AttributeError: 'dict' object has no attribute 'name'
+2021-05-25 08:47:38,272 - display - ERROR - Exception on /sites [GET]
+Traceback (most recent call last):
+  File "/home/ark/.local/lib/python3.7/site-packages/flask/app.py", line 2051, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/ark/.local/lib/python3.7/site-packages/flask/app.py", line 1501, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/ark/.local/lib/python3.7/site-packages/flask/app.py", line 1499, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/ark/.local/lib/python3.7/site-packages/flask/app.py", line 1485, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**req.view_args)
+  File "display.py", line 32, in sites
+    sites = restapis.build_sites_list()
+  File "/home/ark/SAUR/FrontEnd/restapis.py", line 34, in build_sites_list
+    sites = [ ctc['name']    for ctc in answer["Cisco-IOS-XE-native:route-map"] if ctc['name'].startwith('To_') ]
+  File "/home/ark/SAUR/FrontEnd/restapis.py", line 34, in <listcomp>
+    sites = [ ctc['name']    for ctc in answer["Cisco-IOS-XE-native:route-map"] if ctc['name'].startwith('To_') ]
+AttributeError: 'str' object has no attribute 'startwith'
+2021-05-25 16:56:16,502 - display - ERROR - Exception on /site/To_Site_101 [GET]
+Traceback (most recent call last):
+  File "/home/ark/.local/lib/python3.7/site-packages/flask/app.py", line 2051, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/ark/.local/lib/python3.7/site-packages/flask/app.py", line 1501, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/ark/.local/lib/python3.7/site-packages/flask/app.py", line 1499, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/ark/.local/lib/python3.7/site-packages/flask/app.py", line 1485, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**req.view_args)
+TypeError: site_info() got an unexpected keyword argument 'name'
+2021-05-25 16:57:29,335 - display - ERROR - Exception on /site/To_Site_101 [GET]
+Traceback (most recent call last):
+  File "/home/ark/.local/lib/python3.7/site-packages/flask/app.py", line 2051, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/ark/.local/lib/python3.7/site-packages/flask/app.py", line 1501, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/ark/.local/lib/python3.7/site-packages/flask/app.py", line 1499, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/ark/.local/lib/python3.7/site-packages/flask/app.py", line 1485, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**req.view_args)
+  File "display.py", line 37, in site_info
+    site_info = restapis.build_site_info(name)
+  File "/home/ark/SAUR/FrontEnd/restapis.py", line 47, in build_site_info
+    return  answer["Cisco-IOS-XE-native:route-map"]
+KeyError: 'Cisco-IOS-XE-native:route-map'
+2021-05-25 16:59:38,353 - display - ERROR - Exception on /site/To_Site_101 [GET]
+Traceback (most recent call last):
+  File "/home/ark/.local/lib/python3.7/site-packages/flask/app.py", line 2051, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/ark/.local/lib/python3.7/site-packages/flask/app.py", line 1501, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/ark/.local/lib/python3.7/site-packages/flask/app.py", line 1499, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/ark/.local/lib/python3.7/site-packages/flask/app.py", line 1485, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**req.view_args)
+  File "display.py", line 37, in site_info
+    site_info = restapis.build_site_info(name)
+  File "/home/ark/SAUR/FrontEnd/restapis.py", line 46, in build_site_info
+    answer = requests.get (url, auth = requests.auth.HTTPBasicAuth( 'cisco', 'cisco'), headers=headers, verify = False).json()
+  File "/usr/lib/python3/dist-packages/requests/models.py", line 897, in json
+    return complexjson.loads(self.text, **kwargs)
+  File "/usr/lib/python3/dist-packages/simplejson/__init__.py", line 518, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python3/dist-packages/simplejson/decoder.py", line 370, in decode
+    obj, end = self.raw_decode(s)
+  File "/usr/lib/python3/dist-packages/simplejson/decoder.py", line 400, in raw_decode
+    return self.scan_once(s, idx=_w(s, idx).end())
+simplejson.errors.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+2021-05-31 14:21:02,303 - display - ERROR - Exception on /contracts [GET]
+Traceback (most recent call last):
+  File "/home/ark/.local/lib/python3.7/site-packages/flask/app.py", line 2051, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/ark/.local/lib/python3.7/site-packages/flask/app.py", line 1501, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/ark/.local/lib/python3.7/site-packages/flask/app.py", line 1499, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/ark/.local/lib/python3.7/site-packages/flask/app.py", line 1485, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**req.view_args)
+  File "display.py", line 28, in contracts
+    contracts = restapis.build_contracts_list()
+  File "/home/ark/SAUR/FrontEnd/restapis.py", line 27, in build_contracts_list
+    if answer.status_code in [200,202,204]:
+AttributeError: 'dict' object has no attribute 'status_code'

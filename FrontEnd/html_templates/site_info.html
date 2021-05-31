@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block head %}
+{% endblock %}
+
+    
+{% block body %}
+site info :
+<br>
+{{ site }}
+<br>
+<br>
+see contract : <a href=contract/{{site[0].match.extcommunity.name[0]}}>{{site[0].match.extcommunity.name[0]}}</a>
+{% endblock %}
+  

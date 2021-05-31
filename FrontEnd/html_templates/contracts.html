@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block head %}
+{% endblock %}
+
+    
+{% block body %}
+<H1> contracts list</h1>
+<br>
+<table style="border: 1px #2b2b2b solid; margin-left: 10px; width: 90%;"><tbody>
+    {% for contract in contracts %}
+       <tr><td style="padding-left: 10px;"><a href=site/{{ contract.name  }}>{{ contract.name  }}</td></tr>
+    {% endfor %}
+</tbody>
+</table>
+{% endblock %}
+  
+</tbody>
+
