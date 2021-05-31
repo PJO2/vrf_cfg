@@ -28,6 +28,11 @@ def contracts():
    contracts = restapis.build_contracts_list()
    return flask.render_template('contracts.html', contracts=contracts)
 
+@frontend.route ("/contract/<name>")
+def contract_info(name):
+   contract_info = netconfapis.build_contract_info(name)
+   return flask.render_template('contract_info.html', contract=contract_info)
+
 @frontend.route ("/sites")
 def sites():
    sites = restapis.build_sites_list()

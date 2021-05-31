@@ -11,7 +11,7 @@ import json
 import config
 
 
-URLs =   { 'contracts': '/restconf/data/native/ip/extcommunity-list/standard?fields=name' ,
+URLs =   { 'contracts': '/restconf/data/native/ip/extcommunity-list/standard' ,
            'sites':     '/restconf/data/native/route-map?fields=name' ,
            'site':      '/restconf/data/native/route-map=To_{}/route-map-without-order-seq' ,
          }
@@ -26,7 +26,10 @@ def build_contracts_list():
    answer = requests.get (url, auth = requests.auth.HTTPBasicAuth( 'cisco', 'cisco'), headers=headers, verify = False).json()
 #   if answer.status_code in [200,202,204]:
    if True:
-      return answer["Cisco-IOS-XE-bgp:standard"]
+      ctc = []
+      for comm in answer["Cisco-IOS-XE-bgp:standard"]:
+          ctc.append(  { 'name': comm['name'], 'id': comm['permit']['rt'][0]['name'][len("65500:"):] }  )
+      return ctc
    else:
       print ("Error in API request")
       return None
@@ -45,4 +48,8 @@ def build_site_info(site_name):
    print(url)
    answer = requests.get (url, auth = requests.auth.HTTPBasicAuth( 'cisco', 'cisco'), headers=headers, verify = False).json()
    return  answer["Cisco-IOS-XE-route-map:route-map-without-order-seq"]
+
+# --------------------------------
+if __name__ == "__main__":
+   print (build_contracts_list())
 

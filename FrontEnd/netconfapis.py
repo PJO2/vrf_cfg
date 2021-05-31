@@ -47,13 +47,14 @@ def build_sites_list2():
     return c
 
 
-def build_contract_info(contract_id):
+def build_contract_info(contract_name):
     m = manager.connect( host='10.112.83.100',
                        port=830,
                        username='cisco',
                        password='cisco',
                        hostkey_verify=False)
-    xpath = "/native/route-map//match/extcommunity[name='{}']".format(contract_id)
+    xpath = "/native/route-map//match/extcommunity[name='{}']".format(contract_name)
     c = m.get_config(source='running', filter=cook_xpath(xpath)).data_xml
+    return c
 
 
