@@ -223,3 +223,33 @@ Traceback (most recent call last):
   File "/usr/lib/python3/dist-packages/simplejson/decoder.py", line 400, in raw_decode
     return self.scan_once(s, idx=_w(s, idx).end())
 simplejson.errors.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+2021-06-02 17:17:14,712 - display - ERROR - Exception on /contract/521 [GET]
+Traceback (most recent call last):
+  File "/home/ark/.local/lib/python3.7/site-packages/flask/app.py", line 2051, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/ark/.local/lib/python3.7/site-packages/flask/app.py", line 1501, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/ark/.local/lib/python3.7/site-packages/flask/app.py", line 1499, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/ark/.local/lib/python3.7/site-packages/flask/app.py", line 1485, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**req.view_args)
+  File "display.py", line 33, in contract_info
+    contract_info = netconfapis.build_contract_info(name)
+  File "/home/ark/SAUR/FrontEnd/netconfapis.py", line 60, in build_contract_info
+    return json.dump (c)
+TypeError: dump() missing 1 required positional argument: 'fp'
+2021-06-02 17:21:20,249 - display - ERROR - Exception on /contract/521 [GET]
+Traceback (most recent call last):
+  File "/home/ark/.local/lib/python3.7/site-packages/flask/app.py", line 2051, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/ark/.local/lib/python3.7/site-packages/flask/app.py", line 1501, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/ark/.local/lib/python3.7/site-packages/flask/app.py", line 1499, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/ark/.local/lib/python3.7/site-packages/flask/app.py", line 1485, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**req.view_args)
+  File "display.py", line 33, in contract_info
+    contract_info = netconfapis.build_contract_info(name)
+  File "/home/ark/SAUR/FrontEnd/netconfapis.py", line 60, in build_contract_info
+    return json.dumps (c['data']['route-map'], indent=4)
+KeyError: 'route-map'

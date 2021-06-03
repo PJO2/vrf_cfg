@@ -7,17 +7,22 @@
 {% block body %}
   <form class="container">
        <div class="row">
-            <div class="col-md-6">
-                 <button type="button" class="btn btn-primary" style="width:125px" id="save" value="Save">
-                              <i class="glyphicon glyphicon-save"> </i> &nbsp; Save to
+            <div class="col-md-12">
+                <H1>SAUR: looking glass server</H1>
+            </div>
+           <div class="col-md-6" style="margin-top:8px">
+                    <button type="button" class="btn btn-info" style="width:250px;" 
+                                 id="list" value="List" onClick="location.href='/sites'">
+                              <i class="glyphicon glyphicon-search"> </i> &nbsp; Voir les sites
                     </button>
            </div>
            <div class="col-md-6" style="margin-top:8px">
-                    <button type="button" class="btn btn-info" style="width:125px;" 
-                                 id="list" value="List" onClick="location.href='/list'">
-                              <i class="glyphicon glyphicon-search"> </i> &nbsp; List
+                    <button type="button" class="btn btn-info" style="width:250px;" 
+                                 id="list" value="List" onClick="location.href='/contracts'">
+                              <i class="glyphicon glyphicon-search"> </i> &nbsp; Voir les contrats
                     </button>
            </div>
+        </div>
         </div>
      </form>
 {% endblock %}

@@ -1,4 +1,6 @@
 from ncclient import manager
+import xmltodict
+import json
 import re
 
 #
@@ -53,8 +55,9 @@ def build_contract_info(contract_name):
                        username='cisco',
                        password='cisco',
                        hostkey_verify=False)
-    xpath = "/native/route-map//match/extcommunity[name='{}']".format(contract_name)
-    c = m.get_config(source='running', filter=cook_xpath(xpath)).data_xml
-    return c
+    xpath = "/native/route-map/*/match/extcommunity[name='{}']".format(contract_name)
+    c = xmltodict.parse( m.get_config(source='running', filter=cook_xpath(xpath)).data_xml )
+    liste_sites = [ r['name'][3:]   for r in c['data']['native']['route-map'] ]
+    return json.dumps (liste_sites, indent=4)
 
 
