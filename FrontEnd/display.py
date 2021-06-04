@@ -31,7 +31,8 @@ def contracts():
 @frontend.route ("/contract/<name>")
 def contract_info(name):
    contract_info = netconfapis.build_contract_info(name)
-   return flask.render_template('contract_info.html', contract=contract_info, contract_id=name)
+   routes_info = netconfapis.build_contract_route(name)
+   return flask.render_template('contract_info.html', contract=contract_info, routes=routes_info, contract_id=name)
 
 @frontend.route ("/sites")
 def sites():
