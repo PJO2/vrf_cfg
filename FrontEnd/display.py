@@ -11,7 +11,7 @@ import json
 
 # add config 
 import config
-import restapis
+# import restapis
 import netconfapis
 
 
@@ -25,7 +25,7 @@ def home():
 
 @frontend.route ("/contracts")
 def contracts():
-   contracts = restapis.build_contracts_list()
+   contracts = netconfapis.build_contracts_list()
    return flask.render_template('contracts.html', contracts=contracts)
 
 @frontend.route ("/contract/<name>")
@@ -36,12 +36,12 @@ def contract_info(name):
 
 @frontend.route ("/sites")
 def sites():
-   sites = restapis.build_sites_list()
+   sites = netconfapis.build_sites_list()
    return flask.render_template('sites.html', sites=sites)
 
 @frontend.route ("/site/<name>")
 def site_info(name):
-   site_info = restapis.build_site_info(name)
+   site_info = netconfapis.build_site_info(name)
    return flask.render_template('site_info.html', site=site_info)
 
 

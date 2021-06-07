@@ -10,6 +10,7 @@ site info :
 {{ site }}
 <br>
 <br>
-see contract : <a href=/contract/{{site[0].match.extcommunity.name[0]}}>{{site[0].match.extcommunity.name[0]}}</a>
+see contract : <a href=/contract/{{site.match.extcommunity.name}}>{{site.match.extcommunity.name}}</a>
+
 {% endblock %}
   

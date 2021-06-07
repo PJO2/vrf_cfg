@@ -1,6 +1,7 @@
 #!/ usr/bin/python3
 # --------------------------------
-# request the router
+# REST API requests to the router
+# migrated to netconf for more precise xpath processing
 # -------------------------------
 
 
@@ -21,6 +22,10 @@ headers = { 'Content-Type': 'application/json', 'Accept': 'application/yang-data
 
 
 def build_contracts_list():
+   """ return the contracts names
+
+   list all extended community-list and map them to contract name + id
+   """
    url = 'https://' + config.HUBs[0] + URLs['contracts']
    print(url)
    answer = requests.get (url, auth = requests.auth.HTTPBasicAuth( 'cisco', 'cisco'), headers=headers, verify = False).json()
