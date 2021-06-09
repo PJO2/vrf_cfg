@@ -1,0 +1,169 @@
+! --------------
+! cleaning
+! --------------
+no router bgp 65000
+no interface GigabitEthernet3.243{{ cpe.lab_id }}
+{% for vrf in VRFs %}
+no vrf definition {{ vrf.name }}
+no interface GigabitEthernet2.{{ vrf.id }}
+no interface vasileft{{ vrf.id }}
+no interface vasiright{{ vrf.id }}
+{% endfor %}
+
+! --------------
+! begin 
+! --------------
+
+hostname csr-spoke-{{cpe.name}}
+
+!! GRT configuration
+! ------------------
+
+ip prefix-list PEERs seq 5 permit 172.20.0.0/24 le 32
+
+interface Loopback100
+ description -- CE to SR peering --
+ ip address 172.20.0.{{cpe.id}} 255.255.255.255
+!
+
+interface GigabitEthernet1
+  description -- Administration Radequa --
+
+interface GigabitEthernet2
+  no shut
+  description -- Trunk to Customer LAN --
+
+interface GigabitEthernet3
+  description -- Trunk to WAN --
+  no shut
+!
+interface GigabitEthernet3.243{{ cpe.lab_id }}
+ description -- CPE GRT to WAN, no VRF awareness --
+ encapsulation dot1Q 243{{ cpe.lab_id }}
+ ip address 10.24.3{{ cpe.lab_id }}.2 255.255.255.252
+!
+router bgp 65000
+  bgp log-neighbor-changes
+  no bgp default ipv4-unicast
+  neighbor 10.24.3{{ cpe.lab_id }}.1 remote-as 25186
+  neighbor 10.24.3{{ cpe.lab_id }}.1 description -- To PE --
+ !
+ address-family ipv4
+   network 172.20.0.{{ cpe.id }} mask 255.255.255.255
+   neighbor 10.24.3{{ cpe.lab_id }}.1 activate
+   neighbor 10.24.3{{ cpe.lab_id }}.1 advertisement-interval 5
+   neighbor 10.24.3{{ cpe.lab_id }}.1 prefix-list PEERs in
+ exit-address-family
+ !
+exit
+
+router bgp 65000
+ no bgp default ipv4-unicast
+ neighbor VASI peer-group
+ neighbor VASI remote-as 65000
+ neighbor VASI description -- internal peer on VASI --
+ neighbor RS peer-group
+ neighbor RS remote-as 65500
+ neighbor RS description -- To route-server --
+ neighbor RS ebgp-multihop 255
+ neighbor RS update-source Loopback100
+ neighbor RS timers 15 45
+
+ address-family ipv4
+  neighbor VASI send-community
+  neighbor VASI prefix-list DENY_ALL out
+  neighbor VASI activate
+ exit-address-family
+
+ip route 0.0.0.0 0.0.0.0 172.20.0.0 name --default--
+
+! --------------------------------------------------------
+! per VRF configuration
+! --------------------------------------------------------
+{% for vrf in VRFs %}
+
+vrf definition {{ vrf.name }}
+  rd 65000:{{ cpe.id }}90{{ vrf.id }}
+  route-target export 65000:{{vrf.id}}
+  route-target import 65000:{{vrf.id}}
+
+ address-family ipv4
+ exit-address-family
+ !
+!
+!
+!
+interface GigabitEthernet2.{{ vrf.id }}
+ description -- LAN interface for VRF {{ vrf.name }} --
+ encapsulation dot1Q {{ vrf.id }}
+ vrf forwarding {{ vrf.name }}
+ ip address 10.{{ cpe.id }}.{{ vrf.id }}.1 255.255.255.0
+!
+!
+! Vasi interface for routing VRF <--> GRT 
+!
+interface vasileft{{ vrf.id }}
+  description -- dataplane traffic and VRF to GRT control plane advertisment --
+  vrf forwarding {{ vrf.name }}
+  ip address 10.0.{{ vrf.id }}.1 255.255.255.254
+  no keepalive
+!
+interface vasiright{{ vrf.id }}
+  description -- dataplane gateway --
+  ip address 10.0.{{ vrf.id }}.0 255.255.255.254
+  no keepalive
+!
+
+router bgp 65000
+  neighbor 10.0.{{ vrf.id }}.1 peer-group VASI
+  neighbor 10.0.{{ vrf.id }}.1 description -- VRF {{ vrf.name }} Vasi{{ vrf.id }} --
+
+  address-family ipv4
+    neighbor 10.0.{{ vrf.id }}.1 activate
+  exit
+
+ address-family ipv4 vrf {{ vrf.name }}
+  bgp router-id 10.0.{{ vrf.id }}.1
+  network 10.{{cpe.id}}.{{ vrf.id }}.0 mask 255.255.255.0
+  neighbor 10.0.{{ vrf.id }}.0 remote-as 65000
+ exit-address-family
+exit
+
+ !
+{% endfor %}
+!
+
+!
+! inter AS configuration
+! ----------------------
+
+ip prefix-list DENY_ALL seq 5 deny 0.0.0.0/0 le 32
+
+!
+!
+
+{% for vrf in VRFs %}
+vrf definition {{vrf.name}}
+ address-family ipv4
+  inter-as-hybrid next-hop 10.0.{{ vrf.id }}.0
+ exit-address-family
+{% endfor %}
+
+route-map NoAdvertise permit 10
+ set community no-advertise
+
+router bgp 65000
+  neighbor 172.20.0.0 peer-group RS
+  neighbor 172.20.0.0 description --  to route-server 1 --
+ !
+ address-family vpnv4
+  neighbor RS send-community both
+  neighbor RS allowas-in
+  neighbor RS inter-as-hybrid
+  neighbor RS soo 65000:{{cpe.id}}
+  neighbor RS route-map NoAdvertise in
+  neighbor 172.20.0.0 activate
+ exit-address-family
+ !
+!
+

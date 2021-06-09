@@ -1,0 +1,27 @@
+no route-map From_{{ cpe.name }} 
+no route-map To_{{ cpe.name }} 
+router bgp 65500
+  no   neighbor 172.20.0.{{ cpe.id }}
+exit
+
+! ------------------------
+ip extcommunity-list standard rt_{{ contract.name }} permit rt 65500:{{contract.id }}
+
+route-map From_{{ cpe.name }} permit 10
+  description -- cpe {{ cpe.name }}, contrat {{ contract.name }} --
+  set extcommunity RT 65500:{{ contract.id }} additive
+
+route-map To_{{ cpe.name }} permit {{ contract.id }}
+  description -- cpe {{ cpe.name }}, contrat {{ contract.name }} --
+  match extcommunity rt_{{ contract.name }}
+
+router bgp 65500
+  neighbor 172.20.0.{{ cpe.id }} inherit peer-session CEs
+  address-family vpnv4
+    neighbor 172.20.0.{{ cpe.id }} activate
+    neighbor 172.20.0.{{ cpe.id }} send-community extended
+    neighbor 172.20.0.{{ cpe.id }} inherit peer-policy CEs
+    neighbor 172.20.0.{{ cpe.id }} route-map From_{{ cpe.name }} in
+    neighbor 172.20.0.{{ cpe.id }} route-map To_{{ cpe.name }} out
+  exit
+
