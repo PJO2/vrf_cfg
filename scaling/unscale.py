@@ -12,6 +12,14 @@ random.seed(100)    # fix strings generation
 CreateSite = """
 int loopback 100
    no ip address 172.19.{{ site.id // 100}}.{{ site.id % 100}} 255.255.255.255 secondary
+{% for vrf in vrfs  %}
+no route-map From_{{ site.name }} permit {{ vrf.id }}
+{% endfor %}
+
+no route-map To_{{ site.name }} permit {{ contract.id }}
+router bgp 65500
+      no neighbor 172.20.{{ site.id // 100}}.{{ site.id % 100}}
+
 """
 
 vrfs = [  { "name": "Data1", "id": 31 }, { "name": "Video", "id": 41 }, { "name": "Phone", "id": 46 } ]

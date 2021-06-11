@@ -1,0 +1,12 @@
+A configurer sur le routeur :
+
+aaa authentication login default local
+aaa authorization exec default local if-authenticated
+aaa authorization network default local
+
+
+Eventuellement pour regenerer les certificats :
+
+no netconf-yang
+netconf-yang
+

@@ -13,7 +13,19 @@ router bgp {{ device.tenant.vars.as_bgp }}
   address-family ipv4
   neighbor {{ extra.ip }} activate
   neighbor {{ extra.ip }} route-map SETCT{{  '55' if device.role.vars.description=='secondary' else '77' }} out
+  neighbor {{ extra.ip }} advertisement-interval 5
+  neighbor {{ extra.ip }} prefix-list PEERs in
   exit-address-family
 
 exit
+
+! WAN interface (built in the minimal configuration)
+interface Giga 3.243{{ (device.site.id|int) % 100  }}
+    description -- CPE GRT to WAN, no VRF awareness --
+    encapsulation dot1Q 243{{ (device.site.id|int) % 100  }}
+    ip address {{ (extra.ip~"/30")  | ipaddr('2') | ipaddr('address') }} 255.255.255.252
+
+{% for rs in device.tenant.vars.route_servers %}
+ip route 0.0.0.0 0.0.0.0 {{ rs.ip }} name --toPE--
+{% endfor %}
 

@@ -50,17 +50,18 @@ tenants:
         route_servers:
           - name: RS1
             ip:   172.20.0.0
-          - name: RS2
-            ip:   172.20.0.1
         vrfs:
-          - name: Video
-            id:   41
+          - name: CA
+            id:   21
             type: Hub and Spoke
-          - name: Phone
-            id:   46
-            type: Any to Any
-          - name: Data1
+          - name: Metier
             id:   31
+            type: Any to Any
+          - name: VideoExterne
+            id:   41
+            type: Any to Any
+          - name: VideoInterne
+            id:   42
             type: Any to Any
 
 topologies: 
@@ -89,7 +90,7 @@ topologies:
             role_id:     2 
 
 sites:
-   - name: Limoges001
+   - name: Limoges_Platon
      tenant: SAUR
      location: 
      id:   101
@@ -97,42 +98,48 @@ sites:
      topology: L3VPN dual
      vars:
          vrfs:
-           - name: Video
+           - name: CA
              lan:  
-               ip: 10.101.41.0/24
-           - name: Phone
-             lan:  
-               ip: 10.101.46.0/24
-           - name: Data1
+               ip: 10.101.21.0/24
+           - name: Metier
              lan:  
                ip: 10.101.31.0/24
+           - name: VideoExterne
+             lan:  
+               ip: 10.101.41.0/24
+           - name: VideoInterne
+             lan:  
+               ip: 10.101.42.0/24
          wans:
            - name: primary
              ip:   10.24.31.1
            - name: secondary
              ip:   10.24.31.5
-   - name: Nantes099
+   - name: Limoges_Dumas
      tenant: SAUR
      location: 
-     id:   109
-     contrat: Nantes
+     id:   102
+     contrat: Limoges
      topology: L3VPN dual
      vars:
          vrfs:
-           - name: Video
+           - name: CA
              lan:  
-               ip: 10.109.41.0/24
-           - name: Data1
+               ip: 10.102.21.0/24
+           - name: Metier
              lan:  
-               ip: 10.109.31.0/24
-           - name: Phone
+               ip: 10.102.31.0/24
+           - name: VideoExterne
              lan:  
-               ip: 10.109.46.0/24
+               ip: 10.102.41.0/24
+           - name: VideoInterne
+             lan:
+               ip: 10.102.42.0/24
          wans:
            - name: primary
-             ip:   10.24.32.5
-           - name: secondary
              ip:   10.24.32.1
+           - name: secondary
+             ip:   10.24.32.5
 
 contrats:
    - name: Nantes

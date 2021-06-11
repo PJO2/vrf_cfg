@@ -5,11 +5,14 @@
 ! role is {{ device.role.name }}
 ! role id is {{ '2' if device.role.vars.description=='secondary' else '1' }}
 
-{% set LOOPBACK = '172.20.' ~ ( '2' if device.role.vars.description=='secondary' else '1' )  ~ '.' ~ device.site.id %}
+{% set LOOPBACK = '172.20.' ~ ( '1' if device.role.vars.description=='secondary' else '0' )  ~ '.' ~ device.site.id %}
 
 interface Loopback 100 
   description -- BGP to RS peering --
   ip address {{ LOOPBACK }} 255.255.255.255
+
+route-map NoAdvertise permit 10
+  set community no-advertise
 
 router bgp {{ device.tenant.vars.as_bgp }}
   no bgp default ipv4-unicast
@@ -24,6 +27,8 @@ router bgp {{ device.tenant.vars.as_bgp }}
     neighbor  RS  soo 65000:{{ device.site.id }}
     neighbor  RS  send-community both
     neighbor  RS  inter-as-hybrid
+    ! do not readvertise RS routes inside the VASI
+    neighbor  RS  route-map NoAdvertise in
   exit-address-family
 
   address-family ipv4

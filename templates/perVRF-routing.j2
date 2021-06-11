@@ -16,9 +16,9 @@
 
 # vrf definition :
 vrf definition {{ item.name }}
-   rd {{ device.tenant.vars.as_bgp }}:{{ "%03d9%03d" | format (device.site.id|int, extra.id|int) }}
+   rd {{ device.tenant.vars.as_bgp }}:{{ "%03d9%04d" | format (device.site.id|int, extra.id|int) }}
    ! depending on VRF Type Hub And Spoke or Any to Any (for now any to any)
-   route-target both  {{ extra.id }}:{{ device.site.id }}  
+   route-target both  {{ device.tenant.vars.as_bgp }}:{{ extra.id }}
    address-family ipv4
        inter-as-hybrid next-hop 10.0.{{ extra.id }}.0
    exit-address-family
@@ -27,37 +27,36 @@ exit
   
 # vasi definitions:
 interface vasileft {{ extra.id }}
-  description -- dataplane and controlplane leaking from VRF to GRT --
+  description -- dataplane traffic and VRF to GRT routes advertisment --
   vrf forwarding {{ item.name }}
   ip address 10.0.{{ extra.id }}.1 255.255.255.254
   
 interface vasiright {{ extra.id }}
-  description -- dataplane and controlplane leaking from GRT to VRF {{ item.name }} --
+  description -- dataplane gateway from GRT to VRF {{ item.name }} --
   ip address 10.0.{{ extra.id }}.0 255.255.255.254
 
 # BGP control plane
 router bgp {{ device.tenant.vars.as_bgp }}
  ! Vasi 
- neighbor 10.0.{{extra.id}}.1 peer-group VASI
+   neighbor 10.0.{{extra.id}}.1 peer-group VASI
+   neighbor 10.0.{{extra.id}}.1 description -- VRF {{ item.name }} Vasi{{ extra.id }} --
 !
- address-family ipv4
-  neighbor 10.0.{{ extra.id }}.1 activate
-  ! GRT has received all route, advertise none  to VRFs 
-  neighbor 10.0.{{ extra.id}}.1 activate
- exit-address-family
+  address-family ipv4
+    neighbor 10.0.{{ extra.id }}.1 activate
+   exit-address-family
  !
- address-family ipv4 vrf {{ item.name }}
-  ! Necessary to change its own router-id
-  bgp router-id 10.0.{{extra.id}}.1
-  network {{ item.lan.ip  | ipaddr('network') }} mask {{ item.lan.ip | ipaddr('netmask') }}
-  neighbor 10.0.{{ extra.id }}.0 remote-as {{ device.tenant.vars.as_bgp }}
-  neighbor 10.0.{{ extra.id }}.0 activate
- exit-address-family
+  address-family ipv4 vrf {{ item.name }}
+    ! Necessary to change its own router-id
+    bgp router-id 10.0.{{extra.id}}.1
+    network {{ item.lan.ip  | ipaddr('network') }} mask {{ item.lan.ip | ipaddr('netmask') }}
+    neighbor 10.0.{{ extra.id }}.0 remote-as {{ device.tenant.vars.as_bgp }}
+    neighbor 10.0.{{ extra.id }}.0 activate
+   exit-address-family
 
 
 ! configure LAN interface
-int gi 3.{{extra.id }}
-   description -- LAN interface for VRF {{ extra.name }}
+int gi 2.{{extra.id }}
+   description -- LAN interface for VRF {{ extra.name }} --
    encapsulation dot1q {{ extra.id }}
    vrf forwarding {{ extra.name }}
    ip address {{ item.lan.ip  | ipaddr('2' if device.role.vars.description=='secondary' else '1') | ipaddr('address') }} {{ item.lan.ip | ipaddr('netmask') }}

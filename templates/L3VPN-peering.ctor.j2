@@ -10,3 +10,5 @@ route-map SETCT{{ COMMUNITY }}
   set community 65000:{{ COMMUNITY }}
 exit
 
+ip prefix-list PEERs seq 5 permit 172.20.0.0/28 le 32
+
