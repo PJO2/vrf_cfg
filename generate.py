@@ -29,33 +29,40 @@ def jinja2_env(**kwargs):
 
 
 # --------------------------------------------------------------------------
-# with_items translation:
+# with_items tnd with_extra ranslation:
 #     locate specific data inside the device centered structure
-#     return an iterable list
+#     - with_items translation returns an iterable list
+#     - with_extra returns a single item
+#     with_items is translated before with_extra
 # --------------------------------------------------------------------------
 def locate_template_iteration_data (template, dev_info):
-     with_items = None
+     with_items = {}
      #  specific data are specified in the template database with the with_items keyword
      if 'with_items' in template:
+         var_name, expression = map ( str.strip, template["with_items"].split('=', 1) )
          env = jinja2_env()
-         template = env.from_string( '{{ ' + template['with_items'] + ' }}'  )
+         template = env.from_string( expression  )
          output = template.render(device=dev_info)
-         with_items = json.loads ( output.replace("'", '"') )     
-     return with_items
+         with_items[var_name] = json.loads ( output.replace("'", '"') )     
+         return with_items
+     else:
+         return None
 
 # --------------------------------------------------------------------------
 # with_extra translation:
 #     locate specific data inside the device centered structure
 # --------------------------------------------------------------------------
 def locate_template_specific_data (extra_expr, dev_info, item):
-     extra = None
      #  specific data are specified in the template database with the with_items keyword
      if extra_expr:
+         print (extra_expr)
+         var_name, expression = map ( str.strip, extra_expr.split('=', 1) )
          env = jinja2_env()
-         template = env.from_string( '{{ ' + extra_expr + ' | first  }}'  )
+         template = env.from_string(  expression )
          output = template.render(device=dev_info, item=item)
          extra = json.loads ( output.replace("'", '"') )     
-     return extra
+         return { var_name: extra }
+     return {}
 
 
 # --------------------------------------------------------------------------
@@ -76,13 +83,15 @@ def render_single_template (tmpl_name, ctor_name, extra_expr, dev_info, with_ite
  
      # and resolve the template itself with iteration on with_items
      template = env.get_template( tmpl_name )             # open jinja2 template
-     if isinstance(with_items, list):
-        for idx, item in enumerate(with_items, start=1):
-            extra = locate_template_specific_data(extra_expr, dev_info, item)
-            output += template.render(device=dev_info, item=item, index=idx, extra=extra)
+     if with_items:
+        for idx, item in enumerate( list(with_items.values())[0], start=1):
+            # build the item=with_items[i] dict with item taken from configuration
+            params = { list(with_items.keys()) [0]: item }
+            extra = locate_template_specific_data(extra_expr, dev_info, **params)
+            output += template.render(device=dev_info, **params, index=idx, **extra)
      else:
         extra = locate_template_specific_data(extra_expr, dev_info, None)
-        output += template.render(device=dev_info, item=None, index=0, extra=extra) 
+        output += template.render(device=dev_info, item=None, index=0, **extra) 
      return output
 
 

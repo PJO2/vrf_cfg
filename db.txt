@@ -14,14 +14,14 @@ templates:
      precedence: 50
      services:   ['Create', 'Update' ]
      prolog:     L3VPN-peering.ctor.j2
-     with_extra: device.site.vars.wans | json_query('[? name==`' + device.role.vars.description + '`]')
+     with_extra: extra = {{ device.site.vars.wans | json_query('[? name==`' + device.role.vars.description + '`]') | first }}
 
    - name: mono VRF routing
      file:        perVRF-routing.j2
      precedence:  150
      prolog:      perVRF-routing.ctor.j2
-     with_items:  device.site.vars.vrfs
-     with_extra:  device.tenant.vars.vrfs |  json_query('[? name==`' + item.name + '`]')
+     with_items:  item = {{ device.site.vars.vrfs }}
+     with_extra:  extra = {{ device.tenant.vars.vrfs |  json_query('[? name==`' + item.name + '`]') | first }}
      services:    ['Create', 'Update' ]
 
    - name: Back to back BGP configuration Primary
