@@ -52,7 +52,22 @@ def build_contracts_list():
 
 
 def build_sites_list():
-    """ return the list of site's names """
+    """ return the list of site's names 
+
+    XML data model :
+     <data xmlns="urn:ietf:params:xml:ns:netconf:base:1.0"  
+           xmlns:nc="urn:ietf:params:xml:ns:netconf:base:1.0">
+       <native xmlns="http://cisco.com/ns/yang/Cisco-IOS-XE-native">
+          <route-map>
+             <name>To_Limoges_Dumas</name>
+          </route-map><route-map>
+             <name>To_Limoges_Platon</name>
+          </route-map><route-map>
+             <name>To_Rennes_Gounod</name>
+          </route-map>
+        </native>
+      </data>
+    """
     ns_getsites_filter = '''
            <nc:filter  type="xpath"
                  xmlns:nc="urn:ietf:params:xml:ns:netconf:base:1.0"
@@ -95,6 +110,7 @@ def build_site_info(site_name):
                        hostkey_verify=False)
     xpath_filter = ns_getsiteinfo_filter.format(site_name)
     answer = m.get_config(source='running', filter=xpath_filter).data_xml
+    print (answer)
     c = xmltodict.parse (answer)
     # return raw data
     return c['data']['native']['route-map']['route-map-without-order-seq']
@@ -132,13 +148,14 @@ def build_contract_info(contract_id):
     # resolve contract id
     xpath_filter = ns_getcontract_filter.format(contract_id)
     answer = m.get_config(source='running', filter=xpath_filter).data_xml 
+    print (answer)
     c = xmltodict.parse (answer)
     # build the list
     liste_sites = [ r['name'][3:]   for r in c['data']['native']['route-map'] ]
     return json.dumps (liste_sites, indent=4)
 
 
-def build_contract_route(contract_id):
+def build_contract_routes(contract_id):
     """ retrieve the routes belonging to a contract
 
     explore the bgp route table and extract the routes having
@@ -167,15 +184,33 @@ def build_contract_route(contract_id):
     return json.dumps (list_routes, indent=4)
 
 
+def list_route_maps(name):
+    ns_getrm_filter = '''
+         <nc:filter  type="xpath"
+                 xmlns:nc="urn:ietf:params:xml:ns:netconf:base:1.0"
+                 xmlns:rm="http://cisco.com/ns/yang/Cisco-IOS-XE-route-map"
+                 select="/native/route-map[name='{}']"
+               />
+    '''
+    m = manager.connect( host='10.112.83.100',
+                       port=830,
+                       username='cisco',
+                       password='cisco',
+                       hostkey_verify=False)
+    xpath_filter = ns_getrm_filter.format(name)
+    answer = m.get (filter=xpath_filter).data_xml
+    print (answer)
+
 
 # An api example
 # -----------------
 import sys
 # get all configuration for the contract id given as a parameter
 if __name__ == "__main__":
-    print ( build_routes_info("Contract_555") )
+    print ( list_route_maps('To_Limoges_Dumas') )
+    # print ( build_contract_routes("Contract_555") )
     quit()
     print ( build_sites_list() )
-    input ("type  enter for contract test")
-    print ( build_contract_info ("534") )
+    # input ("type  enter for contract test")
+    print ( build_contract_info ("555") )
  
